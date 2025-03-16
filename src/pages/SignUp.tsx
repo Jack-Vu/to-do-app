@@ -5,7 +5,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const handleOnSubmit = async (e: any) => {
     e.preventDefault();
-    let result = await fetch("http://localhost:5000/register", {
+    let result = await fetch("http://localhost:4000/signup", {
       method: "post",
       body: JSON.stringify({ name, email }),
       headers: {
