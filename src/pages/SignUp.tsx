@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { MouseEvent, useState } from "react";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const handleOnSubmit = async (e: any) => {
+  const handleOnSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
     let result = await fetch("http://localhost:4000/signup", {
       method: "post",

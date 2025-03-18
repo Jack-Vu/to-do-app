@@ -19,8 +19,9 @@ router.post("/login", async (req: Request, resp: Response) => {
 });
 
 router.post("/signup", async (req: Request, resp: Response) => {
-  console.log(req.body);
-
+  console.log(req.body.username);
+  
+  await User.find({ username: req.body.username });
   try {
     const user = await User.create(req.body);
 

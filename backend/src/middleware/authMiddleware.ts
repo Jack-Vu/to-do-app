@@ -1,5 +1,32 @@
-import React from "react";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../config/jwtConfig";
 
-const authMiddleware = () => {};
+const verifyAsync = (token: string, secret: string) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(decoded);
+    });
+  });
+};
 
-export default authMiddleware;
+const userAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(400).send({ message: "Unauthorized: no token provided" });
+  }
+
+  try {
+    const decoded = await verifyAsync(token, jwtConfig.secret as string);
+    req.body = decoded;
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(403).send({ message: "Forbidden: Invalid token" });
+  }
+};
+
+export { userAuth };
