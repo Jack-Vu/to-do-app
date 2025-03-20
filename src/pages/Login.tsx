@@ -2,25 +2,27 @@ import axios from "axios";
 import { useState } from "react";
 
 const Login = () => {
-  const [username, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+  const [show, setShow] = useState(false);
+  const handleFormDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
-
-  const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+  const showHidePassword = () => {
+    setShow((prev) => !prev);
   };
 
   const handleSubmit = async () => {
-    console.log("hello");
+    // console.log(formData);
 
     await axios
-      .post("http://localhost:4000/auth/register", { name: "test", email: "12345" })
-      .then(async (response) => {
-        console.log(await response.data);
+      .post("http://localhost:4000/auth/login", formData)
+      .then((response) => {
+        console.log(response);
       })
-      .then((data) => console.log(data))
       .catch((error) => console.error("Error:", error));
   };
 
@@ -30,15 +32,20 @@ const Login = () => {
       <input
         className="border"
         type="text"
-        onChange={onNameChange}
-        placeholder="name"
-      ></input>
+        name="username"
+        onChange={handleFormDataChange}
+        placeholder="username"
+      />
       <input
         className="border"
-        type="text"
-        onChange={onEmailChange}
-        placeholder="email"
-      ></input>
+        type={show ? "text" : "password"}
+        name="password"
+        onChange={handleFormDataChange}
+        placeholder="password"
+      />
+      <button className="btn btn-xs" onClick={showHidePassword}>
+        Show Password
+      </button>
       <button className="btn btn-circle" onClick={handleSubmit}>
         Push me
       </button>

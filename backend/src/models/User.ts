@@ -8,6 +8,7 @@ export type UserType = {
   email: string;
   password: string;
   tasks: TaskType[];
+  isNew: boolean;
 };
 
 const userSchema = new Schema<UserType>(
@@ -22,12 +23,14 @@ const userSchema = new Schema<UserType>(
     },
     email: {
       type: String,
-      required: true,
+      required: function () {
+        return this.isNew;
+      },
       unique: true,
       trim: true,
       set: (value: string) => value.toLowerCase(),
     },
-    password: { type: String, required: true, minlength: 6 },
+    password: { type: String, required: true, minlength: 6, select: false },
   },
   { collection: "Users" }
 );

@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     // loader: rootLoader,
     children: [
       {
-        path: "/",
+        path: "/login",
         element: <Login />,
         // loader: async() => {
         //   const token = localStorage.getItem("token")
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         // },
       },
       {
-        path: "/sign-up",
+        path: "/signup",
         element: <SignUp />,
         // loader: async() => {
         //   const token = localStorage.getItem("token")
