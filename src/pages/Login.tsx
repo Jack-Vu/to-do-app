@@ -19,7 +19,7 @@ const Login = () => {
     // console.log(formData);
 
     await axios
-      .post("http://localhost:4000/auth/login", formData)
+      .post("http://localhost:4000/login", formData)
       .then((response) => {
         console.log(response);
       })

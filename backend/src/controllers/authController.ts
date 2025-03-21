@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../config";
 
 const signup = async (req: Request, res: Response) => {
   try {
@@ -34,9 +36,18 @@ const signup = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({ username: req.body.username }).select(
+      "+password"
+    );
     if (user) {
-      res.status(200).send(user);
+      if (await bcrypt.compare(req.body.password, user.password)) {
+        const token = jwt.sign({ _id: user._id }, jwtConfig.secret as string, {
+          expiresIn: jwtConfig.expiresIn,
+        });
+        res.status(200).send(token);
+      } else {
+        throw new Error("Invalid credentials");
+      }
     } else {
       throw new Error("User not found");
     }
@@ -45,6 +56,8 @@ const login = async (req: Request, res: Response) => {
     const errorMessage = (error as Error).message;
     if (errorMessage === "User not found") {
       res.status(404).send({ message: errorMessage });
+    } else if (errorMessage === "Invalid credentials") {
+      res.status(400).send({ message: errorMessage });
     } else {
       res.status(500).send({ message: "Server error" });
     }

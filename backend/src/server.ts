@@ -3,7 +3,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { connectDb } from "./config";
-import { router } from "./routes";
+import { authRouter, publicRoutes } from "./routes";
 
 
 dotenv.config();
@@ -23,7 +23,8 @@ app.use(cors(corsOptions));
 
 connectDb();
 
-app.use("/auth", router);
+app.use("/auth", authRouter);
+app.use(publicRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Our Server");
