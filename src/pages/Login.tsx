@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
+import { redirect, useNavigate } from "react-router";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -16,12 +18,16 @@ const Login = () => {
   };
 
   const handleSubmit = async () => {
-    // console.log(formData);
+    console.log(formData);
 
     await axios
       .post("http://localhost:4000/login", formData)
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
+
+        const token = response.data;
+        localStorage.setItem("token", token);
+        navigate(`/profile/${formData.username}`);
       })
       .catch((error) => console.error("Error:", error));
   };

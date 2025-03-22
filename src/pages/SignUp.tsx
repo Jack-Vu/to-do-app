@@ -25,7 +25,7 @@ const SignUp = () => {
       .post("http://localhost:4000/signup", formData)
       .then((response) => {
         console.log(response);
-        navigate("/login")
+        navigate("/")
       })
       .catch((error) => console.error("Error:", error));
   };

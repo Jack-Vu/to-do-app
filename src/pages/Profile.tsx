@@ -1,7 +1,7 @@
 import React from "react";
 
-const Tasks = () => {
+const Profile = () => {
   return <div>Task</div>;
 };
 
-export { Tasks };
+export { Profile };

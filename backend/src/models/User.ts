@@ -1,5 +1,4 @@
 import { model, Schema, Types } from "mongoose";
-import { TaskType } from "./Task";
 import sanitizeHtml from "sanitize-html";
 
 export type UserType = {
@@ -7,7 +6,6 @@ export type UserType = {
   username: string;
   email: string;
   password: string;
-  tasks: TaskType[];
   isNew: boolean;
 };
 
