@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router";
 import { Login, SignUp, Profile } from "./pages";
 import axios from "axios";
 
@@ -43,11 +43,13 @@ const router = createBrowserRouter([
         path: "/profile/:username",
         element: <Profile />,
         loader: async ({ params }) => {
+          console.log("Hello");
           const token = localStorage.getItem("token");
+          console.log(token);
           if (token) {
             try {
               await axios
-                .get(`http://localhost:3000/auth/${params.username}`, {
+                .get(`http://localhost:3000/auth/profile/${params.username}`, {
                   headers: { authorization: `Bearer ${token}` },
                 })
                 .then((response) => {
@@ -56,6 +58,8 @@ const router = createBrowserRouter([
             } catch (error) {
               console.error(error);
             }
+          } else {
+            return redirect("/");
           }
         },
       },
