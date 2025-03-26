@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import { User } from "../models/User";
 import { Task } from "../models/Task";
 
 const profile = async (req: Request, res: Response) => {
-  console.log("hello");
-
   try {
-    const username = req.body.username;
-    const user = await User.findOne({ username });
+    const userId = req.body._id;
+    const user = await User.findOne({ _id: userId });
     if (user) {
-      const tasks = "Hello its me mario";
-      console.log(tasks);
-      res.status(200).send({ ...req.body, tasks });
+      const tasks = await Task.find({ creatorId: userId });
+      res.status(200).send({ user, tasks });
     } else {
       throw new Error("User not found");
     }

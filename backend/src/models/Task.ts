@@ -1,8 +1,8 @@
 import { Date, model, Schema, Types } from "mongoose";
-import User from "./User";
+import { User } from "./User";
 import sanitizeHtml from "sanitize-html";
 
-export type TaskType = {
+type TaskType = {
   _id: Types.ObjectId;
   creatorId: Types.ObjectId;
   task: string;
@@ -40,4 +40,4 @@ const taskSchema = new Schema<TaskType>(
 
 const Task = model<TaskType>("Task", taskSchema);
 
-export { Task };
+export { Task, TaskType };

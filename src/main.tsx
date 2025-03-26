@@ -40,21 +40,24 @@ const router = createBrowserRouter([
         // },
       },
       {
-        path: "/profile/:username",
+        path: "/:username",
         element: <Profile />,
         loader: async ({ params }) => {
-          console.log("Hello");
           const token = localStorage.getItem("token");
-          console.log(token);
           if (token) {
             try {
-              await axios
-                .get(`http://localhost:3000/auth/profile/${params.username}`, {
-                  headers: { authorization: `Bearer ${token}` },
-                })
-                .then((response) => {
-                  console.log(response);
-                });
+              const response = await axios.get(
+                `http://localhost:4000/auth/${params.username}`,
+                {
+                  headers: {
+                    authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                  },
+                }
+              );
+
+              return response.data;
             } catch (error) {
               console.error(error);
             }

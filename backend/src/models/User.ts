@@ -1,7 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 import sanitizeHtml from "sanitize-html";
 
-export type UserType = {
+type UserType = {
   _id: Types.ObjectId;
   username: string;
   email: string;
@@ -35,4 +35,4 @@ const userSchema = new Schema<UserType>(
 
 const User = model<UserType>("User", userSchema);
 
-export default User;
+export { User, UserType };

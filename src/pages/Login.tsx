@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { redirect, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,16 +18,12 @@ const Login = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(formData);
-
     await axios
       .post("http://localhost:4000/login", formData)
       .then((response) => {
-        console.log(response.data);
-
         const token = response.data;
         localStorage.setItem("token", token);
-        navigate(`/profile/${formData.username}`);
+        navigate(`/${formData.username}`);
       })
       .catch((error) => console.error("Error:", error));
   };

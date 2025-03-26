@@ -18,7 +18,9 @@ const corsOptions = {
 const app: Express = express();
 const port = process.env.PORT;
 
-app.use(express.json());
+app.use(express.json()); // Enables JSON parsing for incoming requests
+app.use(express.urlencoded({ extended: true })); // Handles form data
+
 app.use(cors(corsOptions));
 
 connectDb();
