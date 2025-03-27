@@ -1,15 +1,7 @@
-import { Outlet, useLoaderData } from "react-router";
-
-type Data = {
-  _id: object;
-  name: string;
-  email: string;
-};
+import { Outlet } from "react-router";
 
 function App() {
-  const data = useLoaderData() as Data | undefined;
-
-  return <Outlet />;
+  return <Outlet/>;
 }
 
 export default App;

@@ -7,10 +7,6 @@ const authRouter = express.Router();
 
 authRouter.get(
   "/:username",
-  (req, res, next) => {
-    console.log("Route handler reached");
-    next();
-  },
   userAuth,
   profile
 );

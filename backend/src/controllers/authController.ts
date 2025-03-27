@@ -3,16 +3,25 @@ import { User } from "../models/User";
 import { Task } from "../models/Task";
 
 const profile = async (req: Request, res: Response) => {
+  const { username } = req.params;
   try {
-    const userId = req.body._id;
-    const user = await User.findOne({ _id: userId });
-    if (user) {
-      const tasks = await Task.find({ creatorId: userId });
-      res.status(200).send({ user, tasks });
+    const loggedInUser = req.body._id;
+    const userProfile = await User.findOne({ username });
+    if (userProfile) {
+      if (userProfile._id.toString() !== loggedInUser) {
+        throw new Error("Unauthorized");
+      }
+      const tasks = await Task.find({ creatorId: loggedInUser });
+      res.status(200).send({
+        userProfile,
+        tasks,
+      });
     } else {
       throw new Error("User not found");
     }
   } catch (error) {
+    const errorMessage = (error as Error).message;
+    res.status(404).send({ message: errorMessage });
     console.error(error);
   }
 };

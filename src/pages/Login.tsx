@@ -23,6 +23,8 @@ const Login = () => {
       .then((response) => {
         const token = response.data;
         localStorage.setItem("token", token);
+        // currently using a useEffect on profile to set user
+        // setUser(user);
         navigate(`/${formData.username}`);
       })
       .catch((error) => console.error("Error:", error));

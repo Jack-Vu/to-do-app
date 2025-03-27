@@ -56,10 +56,12 @@ const router = createBrowserRouter([
                   },
                 }
               );
+              console.log(response.data);
 
-              return response.data;
+              return await response.data;
             } catch (error) {
               console.error(error);
+              return redirect("/");
             }
           } else {
             return redirect("/");
