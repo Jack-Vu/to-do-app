@@ -9,35 +9,14 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    // loader: rootLoader,
     children: [
       {
         path: "/",
         element: <Login />,
-        // loader: async() => {
-        //   const token = localStorage.getItem("token")
-        //   if(token) {
-        //     try {
-        //       await axios.get("http://localhost:3000/")
-        //     } catch (error) {
-
-        //     }
-        //   }
-        // },
       },
       {
         path: "/signup",
         element: <SignUp />,
-        // loader: async() => {
-        //   const token = localStorage.getItem("token")
-        //   if(token) {
-        //     try {
-        //       await axios.get("http://localhost:3000/")
-        //     } catch (error) {
-
-        //     }
-        //   }
-        // },
       },
       {
         path: "/:username",
@@ -58,7 +37,7 @@ const router = createBrowserRouter([
               );
               console.log(response.data);
 
-              return await response.data;
+              return response.data;
             } catch (error) {
               console.error(error);
               return redirect("/");

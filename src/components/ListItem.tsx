@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef } from "react";
 import { useStore } from "../context";
 import { TaskInput } from "./TaskInput";
 
-const ListType = () => {
-  const { user, setInputActive } = useStore();
+const ListItem = () => {
+  const { setInputActive, listType } = useStore();
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
       if (
@@ -26,13 +26,25 @@ const ListType = () => {
   }, [handleClickOutside]);
 
   return (
-    <>
-      <div>Hello {user?.username}</div>
+    <div
+      className={`w-full h-full border rounded-3xl p-10 flex flex-col justify-between bg-cover bg-center ${listType.url}`}
+    >
+      <div
+        className={`${
+          listType.title === "My Day" || listType.title === "Tasks"
+            ? "text-white"
+            : listType.textColor
+        }
+        flex gap-2 items-center text-xl`}
+      >
+        <div className={"w-7 h-7"}>{listType.icon}</div>
+        {listType.title}
+      </div>
       <div ref={containerRef}>
         <TaskInput />
       </div>
-    </>
+    </div>
   );
 };
 
-export { ListType };
+export { ListItem };

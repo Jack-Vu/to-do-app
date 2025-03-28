@@ -25,42 +25,58 @@ const SignUp = () => {
       .post("http://localhost:4000/signup", formData)
       .then((response) => {
         console.log(response);
-        navigate("/")
+        navigate("/");
       })
       .catch((error) => console.error("Error:", error));
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <div className="flex text-5xl text-red-500">Hello</div>
       <input
-        className="border"
+        className="border p-1 outline-none"
+        type="text"
+        name="firstName"
+        onChange={handleFormDataChange}
+        placeholder="firstName"
+      />
+      <input
+        className="border p-1 outline-none"
+        type="text"
+        name="lastName"
+        onChange={handleFormDataChange}
+        placeholder="lastName"
+      />
+      <input
+        className="border p-1 outline-none"
         type="text"
         name="username"
         onChange={handleFormDataChange}
         placeholder="username"
       />
       <input
-        className="border"
+        className="border p-1 outline-none"
         type="email"
         name="email"
         onChange={handleFormDataChange}
         placeholder="email"
       />
-      <input
-        className="border"
-        type={show ? "text" : "password"}
-        name="password"
-        onChange={handleFormDataChange}
-        placeholder="password"
-      />
-      <button className="btn btn-xs" onClick={showHidePassword}>
-        Show Password
+      <div className="flex gap-2 border items-center p-1">
+        <input
+          className="outline-none"
+          type={show ? "text" : "password"}
+          name="password"
+          onChange={handleFormDataChange}
+          placeholder="password"
+        />
+        <button className="btn btn-xs " onClick={showHidePassword}>
+          Show Password
+        </button>
+      </div>
+      <button className="btn" onClick={handleSubmit}>
+        Submit
       </button>
-      <button className="btn btn-circle" onClick={handleSubmit}>
-        Push me
-      </button>
-    </>
+    </div>
   );
 };
 
