@@ -11,6 +11,6 @@ authRouter.get(
   profile
 );
 authRouter.post("/createTask", userAuth, createTask);
-// authRouter.post("/signup", signup);
+
 
 export { authRouter };

@@ -15,7 +15,7 @@ const UserInfoAvatar = () => {
         <p>{user?.username}</p>
         <div className="flex items-center text-center text-gray-400">
           <p className="text-xs">{user?.email}</p>
-          <ChevronUpDownIcon className="w-3 h-3" />
+          <ChevronUpDownIcon className="w-3 h-3 mt-0.5" />
         </div>
       </div>
     </div>

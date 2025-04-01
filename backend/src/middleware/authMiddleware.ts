@@ -9,7 +9,7 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
       throw new Error("Unauthorized: no token provided");
     }
     const decoded = jwt.verify(token, jwtConfig.secret as string);
-    req.body = decoded;
+    req.body = { ...req.body, decoded };
     next();
   } catch (error) {
     console.log(error);

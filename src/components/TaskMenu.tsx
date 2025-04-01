@@ -4,7 +4,7 @@ import { TaskSearch } from "./TaskSearch";
 import { UserInfoAvatar } from "./UserInfoAvatar";
 
 const TaskMenu = () => {
-  const { listType, setListType } = useStore();
+  const { listType, setListType, tasks, setDisplayedTasks } = useStore();
 
   return (
     <div className="flex items-center flex-col w-[25%] h-full gap-1 pl-0 pr-2">
@@ -16,7 +16,25 @@ const TaskMenu = () => {
             <div
               onClick={() => {
                 setListType(LIST_CONSTANT[index]);
-                console.log(list);
+                switch (list.title) {
+                  case "My Day":
+                    setDisplayedTasks(tasks.filter((task) => !!task.myDay));
+                    break;
+                  case "Important":
+                    setDisplayedTasks(tasks.filter((task) => !!task.important));
+                    break;
+                  case "Planned":
+                    setDisplayedTasks(tasks.filter((task) => !!task.dueDate));
+                    break;
+                  case "Assigned to me":
+                    setDisplayedTasks(tasks.filter((task) => !!task.myDay));
+                    break;
+                  case "Tasks":
+                    setDisplayedTasks(tasks);
+                    break;
+                  default:
+                    break;
+                }
               }}
               className={`hover:bg-gray-100 flex flex-row gap-2 h-10 items-center ${
                 listType.title === list.title ? "bg-gray-100" : ""

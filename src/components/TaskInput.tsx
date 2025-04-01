@@ -2,9 +2,10 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import { useStore } from "../context";
 import { ChangeEvent, useRef, useState } from "react";
 import { debounce } from "lodash";
+import axios from "axios";
 
 const TaskInput = () => {
-  const { isInputActive, setInputActive } = useStore();
+  const { user, isInputActive, setInputActive, setTasks } = useStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
   const [canSubmit, setCanSubmit] = useState(false);
@@ -21,15 +22,41 @@ const TaskInput = () => {
     debounceEnableSubmit(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (input.trim() == "" || !canSubmit) {
       return;
     }
-    console.log(input);
+
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+
+      const response = await axios.post(
+        `http://localhost:4000/auth/createTask`,
+        {
+          task: input,
+          creatorId: user?._id,
+          myDay: true,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response);
+      setTasks(response.data);
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    setInput("");
+
     if (inputRef.current) {
       inputRef.current.focus();
     }
-    setInput("");
   };
 
   return (

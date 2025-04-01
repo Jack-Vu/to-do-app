@@ -5,16 +5,16 @@ import { Task } from "../models/Task";
 const profile = async (req: Request, res: Response) => {
   const { username } = req.params;
   try {
-    const loggedInUser = req.body._id;
+    const loggedInUser = req.body.decoded._id;
     const userProfile = await User.findOne({ username });
     if (userProfile) {
       if (userProfile._id.toString() !== loggedInUser) {
         throw new Error("Unauthorized");
       }
-      const tasks = await Task.find({ creatorId: loggedInUser });
+      const userTasks = await Task.find({ creatorId: loggedInUser });
       res.status(200).send({
         userProfile,
-        tasks,
+        userTasks,
       });
     } else {
       throw new Error("User not found");
@@ -30,7 +30,8 @@ const createTask = async (req: Request, res: Response) => {
   try {
     const task = new Task(req.body);
     await task.save();
-    const usersTasks = await Task.find({ creatorId: req.body._id });
+    const usersTasks = await Task.find({ creatorId: req.body.decoded._id });
+    console.log(usersTasks);
     res.status(201).send(usersTasks);
   } catch (error) {
     console.error(error);

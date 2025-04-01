@@ -6,18 +6,22 @@ import { useEffect } from "react";
 
 type LoaderDataType = {
   userProfile: UserType;
-  tasks: TaskType;
+  userTasks: TaskType[];
 };
 const Profile = () => {
   const loaderData = useLoaderData() as LoaderDataType;
-  const { userProfile, tasks } = loaderData;
-  const { user, setUser } = useStore();
+  const { userProfile, userTasks } = loaderData;
+  const { user, setUser, tasks, setTasks, setDisplayedTasks } = useStore();
 
   useEffect(() => {
     if (userProfile) {
       setUser(userProfile);
     }
-  }, [setUser, userProfile]);
+    if (userTasks) {
+      setTasks(userTasks);
+      setDisplayedTasks(userTasks.filter((task) => task.myDay));
+    }
+  }, [setDisplayedTasks, setTasks, setUser, userProfile, userTasks]);
 
   console.log(userProfile, user, tasks);
   return (
