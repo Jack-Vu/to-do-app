@@ -14,6 +14,8 @@ export type listConstantType = {
   textColor: string;
 };
 
+
+
 const LIST_CONSTANT = [
   {
     title: "My Day",

@@ -7,7 +7,7 @@ type StoreType = {
   setUser: (user: UserType) => void;
   tasks: TaskType[];
   setTasks: (task: TaskType[]) => void;
-  displayedTasks: TaskType[];
+  displayedTasks: TaskType[] | null;
   setDisplayedTasks: (task: TaskType[]) => void;
   listType: listConstantType;
   setListType: (list: listConstantType) => void;
@@ -20,7 +20,7 @@ const useStore = create<StoreType>()((set) => ({
   setUser: (user) => set({ user }),
   tasks: [],
   setTasks: (tasks) => set({ tasks }),
-  displayedTasks: [],
+  displayedTasks: null,
   setDisplayedTasks: (displayedTasks) => set({ displayedTasks }),
   listType: LIST_CONSTANT[0],
   setListType: (list) => set({ listType: list }),

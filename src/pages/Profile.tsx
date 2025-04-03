@@ -11,7 +11,8 @@ type LoaderDataType = {
 const Profile = () => {
   const loaderData = useLoaderData() as LoaderDataType;
   const { userProfile, userTasks } = loaderData;
-  const { user, setUser, tasks, setTasks, setDisplayedTasks } = useStore();
+  const { user, setUser, tasks, setTasks, displayedTasks, setDisplayedTasks } =
+    useStore();
 
   useEffect(() => {
     if (userProfile) {
@@ -19,9 +20,11 @@ const Profile = () => {
     }
     if (userTasks) {
       setTasks(userTasks);
-      setDisplayedTasks(userTasks.filter((task) => task.myDay));
+      if (!displayedTasks) {
+        setDisplayedTasks(userTasks.filter((task) => task.myDay));
+      }
     }
-  }, [setDisplayedTasks, setTasks, setUser, userProfile, userTasks]);
+  }, [displayedTasks, setDisplayedTasks, setTasks, setUser, userProfile, userTasks]);
 
   console.log(userProfile, user, tasks);
   return (

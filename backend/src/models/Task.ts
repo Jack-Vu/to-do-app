@@ -10,7 +10,6 @@ type TaskType = {
   important: boolean;
   myDay: boolean;
   dueDate: Date;
-  repeat: boolean;
   repeatInterval: "Daily" | "Weekdays" | "Weekly" | "Monthly" | "Yearly";
   note: string;
   createdAt: Date;
@@ -30,7 +29,6 @@ const taskSchema = new Schema<TaskType>(
     important: Boolean,
     myDay: Boolean,
     dueDate: Date,
-    repeat: Boolean,
     repeatInterval: String,
     note: {
       type: String,
