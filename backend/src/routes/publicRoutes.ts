@@ -6,5 +6,4 @@ const publicRoutes = express.Router();
 publicRoutes.post("/login", login);
 publicRoutes.post("/signup", signup);
 
-
 export { publicRoutes };

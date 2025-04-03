@@ -29,14 +29,11 @@ const TaskInput = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
-
       const response = await axios.post(
         `http://localhost:4000/auth/createTask`,
         {
           task: input,
           creatorId: user?._id,
-          myDay: true,
         },
         {
           headers: {
@@ -46,7 +43,6 @@ const TaskInput = () => {
           },
         }
       );
-      console.log(response);
       setTasks(response.data);
     } catch (error) {
       console.error(error);

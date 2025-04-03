@@ -35,7 +35,28 @@ const createTask = async (req: Request, res: Response) => {
     res.status(201).send(usersTasks);
   } catch (error) {
     console.error(error);
+    res.status(500).send("Server Error");
   }
 };
 
-export { profile, createTask };
+const editTask = async (req: Request, res: Response) => {
+  try {
+    const taskToEdit = await Task.findById({ _id: req.body.taskId });
+    console.log("tasktoedit", taskToEdit);
+
+    if (taskToEdit) {
+      if (taskToEdit?.creatorId.toString() !== req.body.decoded._id) {
+        throw new Error("Unauthorized");
+      }
+      const updatedTask = taskToEdit.set(req.body.edit);
+      console.log(updatedTask);
+      await updatedTask.save();
+      const userTasks = await Task.find({ creatorId: req.body.decoded._id });
+      res.status(200).send({ userTasks });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { profile, createTask, editTask };
