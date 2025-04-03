@@ -9,7 +9,7 @@ type TaskProps = {
   task: TaskType;
 };
 const Task = ({ task }: TaskProps) => {
-  const { listType, setTasks, user } = useStore();
+  const { listType, setTasks, user, setDisplayedTasks } = useStore();
   const handleCompleted = async () => {
     if (task.creatorId !== user?._id) {
       throw new Error("Unauthorized");
@@ -32,11 +32,46 @@ const Task = ({ task }: TaskProps) => {
           },
         }
       );
-      setTasks(response.data.userTasks);
+      const tasks = await response.data.userTasks;
+      console.log("Tasks", tasks);
+      setTasks((tasks));
+      switch (listType.title) {
+        case "My Day":
+          setDisplayedTasks([
+            tasks.filter((task: TaskType) => task.myDay && !task.completed),
+            tasks.filter((task: TaskType) => task.myDay && task.completed),
+          ]);
+          break;
+        case "Important":
+          setDisplayedTasks([
+            tasks.filter((task: TaskType) => task.important && !task.completed),
+            tasks.filter((task: TaskType) => task.important && task.completed),
+          ]);
+          break;
+        case "Planned":
+          setDisplayedTasks([
+            tasks.filter((task: TaskType) => task.dueDate && !task.completed),
+            tasks.filter((task: TaskType) => task.dueDate && task.completed),
+          ]);
+          break;
+        case "Assigned to me":
+          setDisplayedTasks([
+            tasks.filter((task: TaskType) => task.myDay && !task.completed),
+            tasks.filter((task: TaskType) => task.myDay && task.completed),
+          ]);
+          break;
+        case "Tasks":
+          setDisplayedTasks([
+            tasks.filter((task: TaskType) => !task.completed),
+            tasks.filter((task: TaskType) => task.completed),
+          ]);
+          break;
+        default:
+          break;
+      }
     } catch (error) {
       console.error(error);
     }
-    console.log("completed");
   };
   return (
     <div className="flex flex-col p-2 gap-1 input w-full h-full bg-white items-start  !outline-none shadow-md cursor-default">
@@ -59,7 +94,7 @@ const Task = ({ task }: TaskProps) => {
               task.completed ? "line-through text-gray-500" : ""
             }`}
           >
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempora,
+            {task.task}
           </div>
           <div className="flex gap-1 text-[10px] text-gray-500">
             {[

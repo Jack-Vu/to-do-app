@@ -11,7 +11,7 @@ type LoaderDataType = {
 const Profile = () => {
   const loaderData = useLoaderData() as LoaderDataType;
   const { userProfile, userTasks } = loaderData;
-  const { user, setUser, tasks, setTasks, displayedTasks, setDisplayedTasks } =
+  const { setUser, setTasks, displayedTasks, setDisplayedTasks } =
     useStore();
 
   useEffect(() => {
@@ -21,12 +21,20 @@ const Profile = () => {
     if (userTasks) {
       setTasks(userTasks);
       if (!displayedTasks) {
-        setDisplayedTasks(userTasks.filter((task) => task.myDay));
+        setDisplayedTasks([
+          userTasks.filter((task) => task.myDay && !task.completed),
+          userTasks.filter((task) => task.myDay && task.completed),
+        ]);
       }
     }
-  }, [displayedTasks, setDisplayedTasks, setTasks, setUser, userProfile, userTasks]);
-
-  console.log(userProfile, user, tasks);
+  }, [
+    displayedTasks,
+    setDisplayedTasks,
+    setTasks,
+    setUser,
+    userProfile,
+    userTasks,
+  ]);
   return (
     <div className="flex h-full w-full justify-center items-center p-8 overflow-x-hidden">
       <TaskMenu />

@@ -11,7 +11,9 @@ const profile = async (req: Request, res: Response) => {
       if (userProfile._id.toString() !== loggedInUser) {
         throw new Error("Unauthorized");
       }
-      const userTasks = await Task.find({ creatorId: loggedInUser });
+      const userTasks = await Task.find({ creatorId: loggedInUser }).sort({
+        createdAt: 1,
+      });
       res.status(200).send({
         userProfile,
         userTasks,
@@ -30,7 +32,11 @@ const createTask = async (req: Request, res: Response) => {
   try {
     const task = new Task(req.body);
     await task.save();
-    const usersTasks = await Task.find({ creatorId: req.body.decoded._id });
+    const usersTasks = await Task.find({
+      creatorId: req.body.decoded._id,
+    }).sort({
+      createdAt: 1,
+    });
     console.log(usersTasks);
     res.status(201).send(usersTasks);
   } catch (error) {
@@ -42,8 +48,6 @@ const createTask = async (req: Request, res: Response) => {
 const editTask = async (req: Request, res: Response) => {
   try {
     const taskToEdit = await Task.findById({ _id: req.body.taskId });
-    console.log("tasktoedit", taskToEdit);
-
     if (taskToEdit) {
       if (taskToEdit?.creatorId.toString() !== req.body.decoded._id) {
         throw new Error("Unauthorized");
@@ -51,7 +55,11 @@ const editTask = async (req: Request, res: Response) => {
       const updatedTask = taskToEdit.set(req.body.edit);
       console.log(updatedTask);
       await updatedTask.save();
-      const userTasks = await Task.find({ creatorId: req.body.decoded._id });
+      const userTasks = await Task.find({
+        creatorId: req.body.decoded._id,
+      }).sort({
+        createdAt: 1,
+      });
       res.status(200).send({ userTasks });
     }
   } catch (error) {

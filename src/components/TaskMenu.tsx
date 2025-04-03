@@ -34,24 +34,39 @@ const TaskMenu = () => {
           }
           return (
             <div
-            key={index}
+              key={index}
               onClick={() => {
                 setListType(LIST_CONSTANT[index]);
                 switch (list.title) {
                   case "My Day":
-                    setDisplayedTasks(tasks.filter((task) => !!task.myDay));
+                    setDisplayedTasks([
+                      tasks.filter((task) => task.myDay && !task.completed),
+                      tasks.filter((task) => task.myDay && task.completed),
+                    ]);
                     break;
                   case "Important":
-                    setDisplayedTasks(tasks.filter((task) => !!task.important));
+                    setDisplayedTasks([
+                      tasks.filter((task) => task.important && !task.completed),
+                      tasks.filter((task) => task.important && task.completed),
+                    ]);
                     break;
                   case "Planned":
-                    setDisplayedTasks(tasks.filter((task) => !!task.dueDate));
+                    setDisplayedTasks([
+                      tasks.filter((task) => task.dueDate && !task.completed),
+                      tasks.filter((task) => task.dueDate && task.completed),
+                    ]);
                     break;
                   case "Assigned to me":
-                    setDisplayedTasks(tasks.filter((task) => !!task.myDay));
+                    setDisplayedTasks([
+                      tasks.filter((task) => task.myDay && !task.completed),
+                      tasks.filter((task) => task.myDay && task.completed),
+                    ]);
                     break;
                   case "Tasks":
-                    setDisplayedTasks(tasks);
+                    setDisplayedTasks([
+                      tasks.filter((task) => !task.completed),
+                      tasks.filter((task) => task.completed),
+                    ]);
                     break;
                   default:
                     break;

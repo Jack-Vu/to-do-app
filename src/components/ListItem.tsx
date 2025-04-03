@@ -5,10 +5,7 @@ import Task from "./Task";
 
 const ListItem = () => {
   const { setInputActive, listType, displayedTasks } = useStore();
-  const completedTask = displayedTasks?.filter((task) => task.completed);
-  const uncompletedTask = displayedTasks?.filter((task) => !task.completed);
   const containerRef = useRef<HTMLDivElement>(null);
-  console.log(completedTask);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -45,17 +42,18 @@ const ListItem = () => {
         {listType.title}
       </div>
       <div className="flex flex-col grow gap-0.5 max-h-[80%] overflow-clip overflow-y-auto">
-        {uncompletedTask?.map((task, index) => {
-          return (
-            <div key={`${index}${task.createdAt}`}>
-              <Task task={task} />
-            </div>
-          );
-        })}
-        {completedTask && completedTask?.length > 0 && (
+        {displayedTasks &&
+          displayedTasks[0]?.map((task, index) => {
+            return (
+              <div key={`${index}${task.createdAt}`}>
+                <Task task={task} />
+              </div>
+            );
+          })}
+        {displayedTasks && displayedTasks[1]?.length > 0 && (
           <>
             <div>Completed Task</div>
-            {completedTask?.map((task, index) => {
+            {displayedTasks[1]?.map((task, index) => {
               return (
                 <div key={`${index}${task.createdAt}`}>
                   <Task task={task} />
