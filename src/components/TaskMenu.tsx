@@ -52,7 +52,7 @@ const TaskMenu = () => {
               key={index}
               onClick={() => {
                 setListType(LIST_CONSTANT[index]);
-                updateDisplayTasks();
+                updateDisplayTasks(tasks);
               }}
               className={`hover:bg-gray-100 flex flex-row gap-2 h-10 items-center ${
                 listType.title === list.title ? "bg-gray-100" : ""

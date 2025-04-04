@@ -8,7 +8,7 @@ type StoreType = {
   tasks: TaskType[];
   setTasks: (task: TaskType[]) => void;
   displayedTasks: TaskType[][];
-  updateDisplayTasks: () => void;
+  updateDisplayTasks: (tasks: TaskType[]) => void;
   listType: listConstantType;
   setListType: (list: listConstantType) => void;
   isInputActive: boolean;
@@ -21,9 +21,9 @@ const useStore = create<StoreType>()((set) => ({
   tasks: [],
   setTasks: (tasks) => set({ tasks }),
   displayedTasks: [[], []],
-  updateDisplayTasks: () =>
+  updateDisplayTasks: (tasks) =>
     set((state) => {
-      const { tasks, listType } = state;
+      const { listType } = state;
       let filteredTasks: TaskType[][] = [];
 
       switch (listType) {

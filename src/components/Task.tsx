@@ -42,8 +42,8 @@ const Task = ({ task }: TaskProps) => {
         }
       );
       const tasks = await response.data.userTasks;
-      setTasks([...tasks]);
-      updateDisplayTasks();
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
     } catch (error) {
       console.error(error);
     }

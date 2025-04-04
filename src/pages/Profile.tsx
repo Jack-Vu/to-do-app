@@ -22,16 +22,17 @@ const Profile = () => {
   );
 
   useEffect(() => {
+    console.log("its me mario")
     if (userProfile) {
       setUser(userProfile);
     }
     if (userTasks) {
-      setTasks([...userTasks]);
+      setTasks(userTasks);
       if (!displayedTasks) {
-        updateDisplayTasks();
+        updateDisplayTasks(userTasks);
       }
     }
-  });
+  },[displayedTasks, setTasks, setUser, updateDisplayTasks, userProfile, userTasks]);
 
   return (
     <div className="flex h-full w-full justify-center items-center p-8 overflow-x-hidden">

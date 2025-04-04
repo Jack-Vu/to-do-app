@@ -13,9 +13,6 @@ const ListItem = () => {
     }))
   );
 
-  
-
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(

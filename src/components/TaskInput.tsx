@@ -52,7 +52,7 @@ const TaskInput = () => {
         }
       );
       const tasks = await response.data;
-      setTasks([...tasks]);
+      setTasks(tasks);
     } catch (error) {
       console.error(error);
       return;
