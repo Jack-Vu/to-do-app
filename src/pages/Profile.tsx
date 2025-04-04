@@ -12,27 +12,25 @@ type LoaderDataType = {
 const Profile = () => {
   const loaderData = useLoaderData() as LoaderDataType;
   const { userProfile, userTasks } = loaderData;
-  const { setUser, setTasks, displayedTasks, updateDisplayTasks } = useStore(
+  const { setUser, setTasks, updateDisplayTasks } = useStore(
     useShallow((state) => ({
       setUser: state.setUser,
       setTasks: state.setTasks,
-      displayedTasks: state.displayedTasks,
       updateDisplayTasks: state.updateDisplayTasks,
     }))
   );
 
   useEffect(() => {
-    console.log("its me mario")
+    console.log("its me mario");
     if (userProfile) {
       setUser(userProfile);
+      setTasks(userTasks);
     }
     if (userTasks) {
       setTasks(userTasks);
-      if (!displayedTasks) {
-        updateDisplayTasks(userTasks);
-      }
+      updateDisplayTasks(userTasks);
     }
-  },[displayedTasks, setTasks, setUser, updateDisplayTasks, userProfile, userTasks]);
+  }, [setTasks, setUser, updateDisplayTasks, userProfile, userTasks]);
 
   return (
     <div className="flex h-full w-full justify-center items-center p-8 overflow-x-hidden">

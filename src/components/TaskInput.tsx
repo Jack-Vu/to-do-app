@@ -6,14 +6,16 @@ import axios from "axios";
 import { useShallow } from "zustand/shallow";
 
 const TaskInput = () => {
-  const { user, isInputActive, setInputActive, setTasks } = useStore(
-    useShallow((state) => ({
-      user: state.user,
-      isInputActive: state.isInputActive,
-      setInputActive: state.setInputActive,
-      setTasks: state.setTasks,
-    }))
-  );
+  const { user, isInputActive, setInputActive, setTasks, updateDisplayTasks } =
+    useStore(
+      useShallow((state) => ({
+        user: state.user,
+        isInputActive: state.isInputActive,
+        setInputActive: state.setInputActive,
+        setTasks: state.setTasks,
+        updateDisplayTasks: state.updateDisplayTasks,
+      }))
+    );
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
   const [canSubmit, setCanSubmit] = useState(false);
@@ -53,6 +55,7 @@ const TaskInput = () => {
       );
       const tasks = await response.data;
       setTasks(tasks);
+      updateDisplayTasks(tasks);
     } catch (error) {
       console.error(error);
       return;

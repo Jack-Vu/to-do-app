@@ -23,6 +23,7 @@ const useStore = create<StoreType>()((set) => ({
   displayedTasks: [[], []],
   updateDisplayTasks: (tasks) =>
     set((state) => {
+      console.log("From the store", tasks);
       const { listType } = state;
       let filteredTasks: TaskType[][] = [];
 
