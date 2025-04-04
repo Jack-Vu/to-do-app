@@ -4,12 +4,21 @@ import { ArrowPathIcon, StarIcon } from "@heroicons/react/24/outline";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { LIST_CONSTANT } from "../constant";
 import axios from "axios";
+import { useShallow } from "zustand/shallow";
 
 type TaskProps = {
   task: TaskType;
 };
 const Task = ({ task }: TaskProps) => {
-  const { listType, setTasks, user, setDisplayedTasks } = useStore();
+  const { listType, setTasks, user, updateDisplayTasks } = useStore(
+    useShallow((state) => ({
+      listType: state.listType,
+      setTasks: state.setTasks,
+      tasks: state.tasks,
+      user: state.user,
+      updateDisplayTasks: state.updateDisplayTasks,
+    }))
+  );
   const handleCompleted = async () => {
     if (task.creatorId !== user?._id) {
       throw new Error("Unauthorized");
@@ -33,42 +42,8 @@ const Task = ({ task }: TaskProps) => {
         }
       );
       const tasks = await response.data.userTasks;
-      console.log("Tasks", tasks);
-      setTasks((tasks));
-      switch (listType.title) {
-        case "My Day":
-          setDisplayedTasks([
-            tasks.filter((task: TaskType) => task.myDay && !task.completed),
-            tasks.filter((task: TaskType) => task.myDay && task.completed),
-          ]);
-          break;
-        case "Important":
-          setDisplayedTasks([
-            tasks.filter((task: TaskType) => task.important && !task.completed),
-            tasks.filter((task: TaskType) => task.important && task.completed),
-          ]);
-          break;
-        case "Planned":
-          setDisplayedTasks([
-            tasks.filter((task: TaskType) => task.dueDate && !task.completed),
-            tasks.filter((task: TaskType) => task.dueDate && task.completed),
-          ]);
-          break;
-        case "Assigned to me":
-          setDisplayedTasks([
-            tasks.filter((task: TaskType) => task.myDay && !task.completed),
-            tasks.filter((task: TaskType) => task.myDay && task.completed),
-          ]);
-          break;
-        case "Tasks":
-          setDisplayedTasks([
-            tasks.filter((task: TaskType) => !task.completed),
-            tasks.filter((task: TaskType) => task.completed),
-          ]);
-          break;
-        default:
-          break;
-      }
+      setTasks([...tasks]);
+      updateDisplayTasks();
     } catch (error) {
       console.error(error);
     }
@@ -119,7 +94,10 @@ const Task = ({ task }: TaskProps) => {
               })}
           </div>
         </div>
-        <StarIcon className="w-4 h-4 text-gray-400 hover:text-blue-500" />
+        <StarIcon
+          className="w-4 h-4 text-gray-400 hover:text-blue-500"
+          onClick={() => console.log(useStore.getState().tasks)}
+        />
       </div>
     </div>
   );

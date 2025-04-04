@@ -2,9 +2,24 @@ import { useStore } from "../context";
 import { LIST_CONSTANT } from "../constant";
 import { TaskSearch } from "./TaskSearch";
 import { UserInfoAvatar } from "./UserInfoAvatar";
+import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
 
 const TaskMenu = () => {
-  const { listType, setListType, tasks, setDisplayedTasks } = useStore();
+  const { listType, setListType, tasks, displayedTasks, updateDisplayTasks } =
+    useStore(
+      useShallow((state) => ({
+        listType: state.listType,
+        tasks: state.tasks,
+        setListType: state.setListType,
+        displayedTasks: state.displayedTasks,
+        updateDisplayTasks: state.updateDisplayTasks,
+      }))
+    );
+
+  useEffect(() => {
+    console.log("Helllo", tasks, displayedTasks);
+  }, [tasks, displayedTasks]);
 
   return (
     <div className="flex items-center flex-col w-[25%] h-full gap-1 pl-0 pr-2">
@@ -24,7 +39,7 @@ const TaskMenu = () => {
               taskNumber = tasks.filter((task) => !!task.dueDate).length;
               break;
             case "Assigned to me":
-              taskNumber = tasks.filter((task) => !!task.myDay).length;
+              taskNumber = tasks.filter((task) => !!task.important).length;
               break;
             case "Tasks":
               taskNumber = tasks.length;
@@ -37,40 +52,7 @@ const TaskMenu = () => {
               key={index}
               onClick={() => {
                 setListType(LIST_CONSTANT[index]);
-                switch (list.title) {
-                  case "My Day":
-                    setDisplayedTasks([
-                      tasks.filter((task) => task.myDay && !task.completed),
-                      tasks.filter((task) => task.myDay && task.completed),
-                    ]);
-                    break;
-                  case "Important":
-                    setDisplayedTasks([
-                      tasks.filter((task) => task.important && !task.completed),
-                      tasks.filter((task) => task.important && task.completed),
-                    ]);
-                    break;
-                  case "Planned":
-                    setDisplayedTasks([
-                      tasks.filter((task) => task.dueDate && !task.completed),
-                      tasks.filter((task) => task.dueDate && task.completed),
-                    ]);
-                    break;
-                  case "Assigned to me":
-                    setDisplayedTasks([
-                      tasks.filter((task) => task.myDay && !task.completed),
-                      tasks.filter((task) => task.myDay && task.completed),
-                    ]);
-                    break;
-                  case "Tasks":
-                    setDisplayedTasks([
-                      tasks.filter((task) => !task.completed),
-                      tasks.filter((task) => task.completed),
-                    ]);
-                    break;
-                  default:
-                    break;
-                }
+                updateDisplayTasks();
               }}
               className={`hover:bg-gray-100 flex flex-row gap-2 h-10 items-center ${
                 listType.title === list.title ? "bg-gray-100" : ""

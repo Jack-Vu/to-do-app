@@ -1,9 +1,13 @@
-import React from "react";
 import { useStore } from "../context";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/shallow";
 
 const UserInfoAvatar = () => {
-  const { user } = useStore();
+  const { user } = useStore(
+    useShallow((state) => ({
+      user: state.user,
+    }))
+  );
   return (
     <div className="flex w-full gap-2 items-center p-2 pl-4">
       <div className="avatar avatar-placeholder">

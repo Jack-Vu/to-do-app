@@ -2,9 +2,20 @@ import { useCallback, useEffect, useRef } from "react";
 import { useStore } from "../context";
 import { TaskInput } from "./TaskInput";
 import Task from "./Task";
+import { useShallow } from "zustand/shallow";
 
 const ListItem = () => {
-  const { setInputActive, listType, displayedTasks } = useStore();
+  const { setInputActive, listType, displayedTasks } = useStore(
+    useShallow((state) => ({
+      setInputActive: state.setInputActive,
+      listType: state.listType,
+      displayedTasks: state.displayedTasks,
+    }))
+  );
+
+  
+
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(
