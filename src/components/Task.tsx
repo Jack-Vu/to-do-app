@@ -1,24 +1,24 @@
 import { TaskType } from "../../backend/src/models";
 import { useStore } from "../context";
-import { ArrowPathIcon, StarIcon } from "@heroicons/react/24/outline";
+import { StarIcon } from "@heroicons/react/24/outline";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { LIST_CONSTANT } from "../constant";
 import axios from "axios";
 import { useShallow } from "zustand/shallow";
+import Details from "./Details";
 
 type TaskProps = {
   task: TaskType;
 };
 const Task = ({ task }: TaskProps) => {
-  const { listType, setTasks, user, updateDisplayTasks } = useStore(
+  const { setTasks, user, updateDisplayTasks } = useStore(
     useShallow((state) => ({
-      listType: state.listType,
       setTasks: state.setTasks,
       tasks: state.tasks,
       user: state.user,
       updateDisplayTasks: state.updateDisplayTasks,
     }))
   );
+
   const handleCompleted = async () => {
     if (task.creatorId !== user?._id) {
       throw new Error("Unauthorized");
@@ -31,6 +31,36 @@ const Task = ({ task }: TaskProps) => {
           taskId: task._id,
           edit: {
             completed: !task.completed,
+          },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleImportant = async () => {
+    if (task.creatorId !== user?._id) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/editTask`,
+        {
+          taskId: task._id,
+          edit: {
+            important: !task.important,
           },
         },
         {
@@ -71,32 +101,13 @@ const Task = ({ task }: TaskProps) => {
           >
             {task.task}
           </div>
-          <div className="flex gap-1 text-[10px] text-gray-500">
-            {[
-              task.myDay && listType.title !== "My Day" && (
-                <div className="flex items-center  gap-1">
-                  <div className="w-3 h-3">{LIST_CONSTANT[0].icon}</div>
-                  {LIST_CONSTANT[0].title}
-                </div>
-              ),
-              listType.title !== "Tasks" && <div>{"Tasks"}</div>,
-              task.dueDate && <div>{`${task.dueDate}`}</div>,
-              task.repeatInterval && <ArrowPathIcon className="w-3 h-3" />,
-            ]
-              .filter(Boolean)
-              .map((element, index) => {
-                return (
-                  <div key={index} className="flex gap-1">
-                    {index > 0 && <span className="text-gray-400">•</span>}
-                    {element}
-                  </div>
-                );
-              })}
-          </div>
+          <Details task={task} />
         </div>
         <StarIcon
-          className="w-4 h-4 text-gray-400 hover:text-blue-500"
-          onClick={() => console.log(useStore.getState().tasks)}
+          className={`w-4 h-4 text-gray-400 hover:text-blue-500 ${
+            task.important ? "fill-blue-500" : ""
+          }`}
+          onClick={handleImportant}
         />
       </div>
     </div>

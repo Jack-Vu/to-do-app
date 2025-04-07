@@ -13,6 +13,8 @@ type StoreType = {
   setListType: (list: listConstantType) => void;
   isInputActive: boolean;
   setInputActive: (active: boolean) => void;
+  dateOpen: boolean;
+  setDateOpen: (open: boolean) => void;
 };
 
 const useStore = create<StoreType>()((set) => ({
@@ -67,6 +69,8 @@ const useStore = create<StoreType>()((set) => ({
   setListType: (list) => set({ listType: list }),
   isInputActive: false,
   setInputActive: (active) => set({ isInputActive: active }),
+  dateOpen: false,
+  setDateOpen: (open) => set({ dateOpen: open }),
 }));
 
 export { useStore };

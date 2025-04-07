@@ -39,7 +39,7 @@ const TaskMenu = () => {
               taskNumber = tasks.filter((task) => !!task.dueDate).length;
               break;
             case "Assigned to me":
-              taskNumber = tasks.filter((task) => !!task.important).length;
+              taskNumber = tasks.filter((task) => !!task.dueDate).length;
               break;
             case "Tasks":
               taskNumber = tasks.length;

@@ -3,6 +3,7 @@ import { useStore } from "../context";
 import { TaskInput } from "./TaskInput";
 import Task from "./Task";
 import { useShallow } from "zustand/shallow";
+import { TaskType } from "../../backend/src/models";
 
 const ListItem = () => {
   const { setInputActive, listType, displayedTasks } = useStore(
@@ -12,6 +13,43 @@ const ListItem = () => {
       displayedTasks: state.displayedTasks,
     }))
   );
+
+  const plannedArray: TaskType[][] = [[], [], [], []];
+  if (listType.title === "Planned") {
+    const filteredTask = displayedTasks[0].filter((task) => task.dueDate);
+    if (filteredTask) {
+      const sortedFilteredTask = filteredTask.sort((a, b) => {
+        const dateA = new Date(a.dueDate.toString()).getTime();
+        const dateB = new Date(b.dueDate.toString()).getTime();
+        return dateA - dateB;
+      });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const dayOfTheWeek = today.getDay();
+      const monday = new Date();
+      monday.setDate(
+        today.getDate() - (dayOfTheWeek === 0 ? 6 : dayOfTheWeek - 1)
+      );
+      const sunday = new Date();
+      sunday.setDate(monday.getDate() + 6);
+
+      sortedFilteredTask.forEach((task) => {
+        const taskDate = new Date(task.dueDate.toString());
+        console.log("Task Date", taskDate.getTime());
+        taskDate.setHours(0, 0, 0, 0);
+        console.log("Today", today.getTime());
+        if (taskDate.getTime() === today.getTime()) {
+          plannedArray[1].push(task);
+        } else if (taskDate < monday) {
+          plannedArray[0].push(task);
+        } else if (taskDate > sunday) {
+          plannedArray[3].push(task);
+        } else {
+          plannedArray[2].push(task);
+        }
+      });
+    }
+  }
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,14 +88,29 @@ const ListItem = () => {
         {listType.title}
       </div>
       <div className="flex flex-col grow gap-0.5 max-h-[80%] overflow-clip overflow-y-auto">
-        {displayedTasks &&
-          displayedTasks[0]?.map((task, index) => {
-            return (
-              <div key={`${index}${task.createdAt}`}>
-                <Task task={task} />
-              </div>
-            );
-          })}
+        {displayedTasks && listType.title === "Planned"
+          ? plannedArray.map((plannedTask, plannedIndex) => {
+              return plannedTask.map((task, index) => {
+                return (
+                  <>
+                    {plannedIndex === 0 && index < 1 && <div>Earlier</div>}
+                    {plannedIndex === 1 && index < 1 && <div>Today</div>}
+                    {plannedIndex === 2 && index < 1 && <div>This Week</div>}
+                    {plannedIndex === 3 && index < 1 && <div>Later</div>}
+                    <div key={`${index}${task.createdAt}`}>
+                      <Task task={task} />
+                    </div>
+                  </>
+                );
+              });
+            })
+          : displayedTasks[0]?.map((task, index) => {
+              return (
+                <div key={`${index}${task.createdAt}`}>
+                  <Task task={task} />
+                </div>
+              );
+            })}
         {displayedTasks && displayedTasks[1]?.length > 0 && (
           <>
             <div>Completed Task</div>
