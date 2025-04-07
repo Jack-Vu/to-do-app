@@ -94,7 +94,7 @@ const TaskInput = () => {
 
           <div
             className={`hover:border hover:rounded-md ${
-              date ? "" : "hover:border-r-"
+              date ? "" : "hover:border-r-5"
             }`}
           >
             <button
