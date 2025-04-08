@@ -1,19 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useStore } from "../context";
 import {
+  CalendarDateRangeIcon,
   CheckIcon,
   EllipsisVerticalIcon,
   PlusIcon,
-  StarIcon,
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import {MyDay} from "./MyDay";
+import DatePicker from "./DatePicker";
+import { ImportantStar } from "./ImportantStar";
+import { DueDate } from "./DueDate";
 
 const TaskDetailsEdit = () => {
   const {
     taskSelected,
-    listType,
     setTaskDetailsOpen,
     setTaskSelected,
     setTasks,
@@ -23,6 +26,19 @@ const TaskDetailsEdit = () => {
   const [editing, setEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [text, setText] = useState(taskSelected?.task || "");
+  
+  
+
+  
+
+  const createdAt = taskSelected
+    ? new Date(taskSelected.createdAt.toString()).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })
+    : undefined;
+
   const handleDelete = async () => {
     try {
       if (taskSelected?.creatorId !== user?._id) {
@@ -49,36 +65,6 @@ const TaskDetailsEdit = () => {
       updateDisplayTasks(tasks);
       setTaskDetailsOpen(false);
       setTaskSelected(null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleMyDay = async () => {
-    if (taskSelected?.creatorId !== user?._id) {
-      throw new Error("Unauthorized");
-    }
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:4000/auth/editTask`,
-        {
-          taskId: taskSelected?._id,
-          edit: {
-            myDay: !taskSelected?.myDay,
-          },
-        },
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-      const tasks = await response.data.userTasks;
-      setTasks(tasks);
-      updateDisplayTasks(tasks);
     } catch (error) {
       console.error(error);
     }
@@ -143,18 +129,10 @@ const TaskDetailsEdit = () => {
             </div>
           )}
 
-          <StarIcon
-            className={`w-5 h-5 text-gray-400 hover:text-blue-500 ml-auto ${
-              taskSelected?.important
-                ? listType
-                  ? "fill-pink-800"
-                  : ""
-                : "fill-blue-500"
-            }`}
-          />
+          <ImportantStar task={taskSelected} dimensions="w-5 h-5" />
         </div>
 
-        {extraSteps.map((extra) => {
+        {extraSteps.map(() => {
           return (
             <div className="flex flex-col justify-center">
               <div className="border-b-1 p-2 border-gray-200 flex items-center">
@@ -188,21 +166,19 @@ const TaskDetailsEdit = () => {
           {"Next Step "}
         </div>
       </div>
-      <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col" onClick={handleMyDay}>
-        Added to my day
-      </div>
-      <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col">
-        <div className="border-b-1 py-3 border-gray-200">
-          {`${taskSelected?.dueDate}`}
+      <MyDay taskSelected={taskSelected} />
+      <div className="border mt-2 rounded-sm border-gray-200 flex flex-col">
+        <div className="pb-4">
+          <DueDate/>
         </div>
-        <div className="py-3">Repeat</div>
+        <div className="pb-4 ml-4">Repeat</div>
       </div>
       <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col">
         {`${taskSelected?.note ? taskSelected?.note : "notes"}`}
       </div>
 
       <div className="border-t-1 p-4 mt-auto border-gray-200 flex flex-row justify-between">
-        {`${taskSelected?.createdAt}`}
+        <div className="border w-full text-center">Created on {createdAt}</div>
         <TrashIcon className="w-5 h-5" onClick={handleDelete} />
       </div>
     </div>

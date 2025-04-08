@@ -1,10 +1,10 @@
 import { TaskType } from "../../backend/src/models";
 import { useStore } from "../context";
-import { StarIcon } from "@heroicons/react/24/outline";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import { useShallow } from "zustand/shallow";
 import Details from "./Details";
+import { ImportantStar } from "./ImportantStar";
 
 type TaskProps = {
   task: TaskType;
@@ -17,7 +17,6 @@ const Task = ({ task }: TaskProps) => {
     setTaskDetailsOpen,
     setTaskSelected,
     taskSelected,
-    listType,
   } = useStore(
     useShallow((state) => ({
       setTasks: state.setTasks,
@@ -27,7 +26,6 @@ const Task = ({ task }: TaskProps) => {
       setTaskDetailsOpen: state.setTaskDetailsOpen,
       setTaskSelected: state.setTaskSelected,
       taskSelected: state.taskSelected,
-      listType: state.listType,
     }))
   );
 
@@ -61,35 +59,6 @@ const Task = ({ task }: TaskProps) => {
     }
   };
 
-  const handleImportant = async () => {
-    try {
-      if (task.creatorId !== user?._id) {
-        throw new Error("Unauthorized");
-      }
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:4000/auth/editTask`,
-        {
-          taskId: task._id,
-          edit: {
-            important: !task.important,
-          },
-        },
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-      const tasks = await response.data.userTasks;
-      setTasks(tasks);
-      updateDisplayTasks(tasks);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   return (
     <div
       className="flex flex-col p-2 gap-1 input w-full h-full bg-white items-start  !outline-none shadow-md cursor-default"
@@ -126,16 +95,7 @@ const Task = ({ task }: TaskProps) => {
           </div>
           <Details task={task} />
         </div>
-        <StarIcon
-          className={`w-4 h-4 text-gray-400 hover:text-blue-500 ml-auto ${
-            task.important
-              ? listType.title === "Important"
-                ? "fill-pink-800"
-                : "fill-blue-500"
-              : "fill-blue-500"
-          }`}
-          onClick={handleImportant}
-        />
+        <ImportantStar task={task} dimensions="w-4 h-4" />
       </div>
     </div>
   );

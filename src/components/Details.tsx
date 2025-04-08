@@ -15,16 +15,16 @@ const Details = ({ task }: DetailsProps) => {
     }))
   );
 
-  let date: string | undefined = undefined;
-  let late: boolean | undefined = undefined;
-  if (task.dueDate) {
-    date = new Date(task.dueDate.toString()).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-    late = isBeforeToday(task.dueDate.toString());
-  }
+  const dateDue = task.dueDate
+    ? new Date(task.dueDate.toString()).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : undefined;
+  const late = task.dueDate
+    ? isBeforeToday(task.dueDate.toString())
+    : undefined;
 
   function isBeforeToday(taskDate: string | undefined): boolean {
     if (!taskDate) {
@@ -47,7 +47,7 @@ const Details = ({ task }: DetailsProps) => {
         ),
         listType.title !== "Tasks" && <div>{"Tasks"}</div>,
         task.dueDate && (
-          <div className={`${late ? "text-red-600" : ""}`}>{`${date}`}</div>
+          <div className={`${late ? "text-red-600" : ""}`}>{`${dateDue}`}</div>
         ),
         task.repeatInterval && <ArrowPathIcon className="w-3 h-3" />,
       ]

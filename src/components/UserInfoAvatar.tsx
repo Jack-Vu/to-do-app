@@ -40,7 +40,7 @@ const UserInfoAvatar = () => {
             className="dropdown text-gray-400 border bg-white p-4"
             style={{ positionAnchor: "--anchor-2" } as React.CSSProperties}
           >
-            <button onClick={handleLogout}>Logout</button>
+            <div onClick={handleLogout}>Logout</div>
           </div>
         </button>
       </div>

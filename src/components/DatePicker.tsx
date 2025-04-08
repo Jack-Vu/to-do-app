@@ -1,25 +1,77 @@
 import { CalendarDateRangeIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import { DayPicker } from "react-day-picker";
+import { useStore } from "../context";
+import axios from "axios";
+import { TaskType } from "../../backend/src/models";
 
 type DatePickerProps = {
   date: Date | undefined;
   setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  anchor: string;
+  input?: boolean;
+  parentOpen?: boolean;
 };
 
-const DatePicker = ({ date, setDate }: DatePickerProps) => {
+const DatePicker = ({ date, setDate, anchor, input }: DatePickerProps) => {
+  const { taskSelected, user, setTasks, updateDisplayTasks, setTaskSelected } =
+    useStore();
   const [open, setOpen] = useState(false);
 
+  const handleAddDueDate = async () => {
+    console.log("we made it");
+    try {
+      if (taskSelected?.creatorId !== user?._id) {
+        throw new Error("Unauthorized");
+      }
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/editTask`,
+        {
+          taskId: taskSelected?._id,
+          edit: {
+            dueDate: date,
+          },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+      setTaskSelected(
+        tasks.filter((task: TaskType) => task._id === taskSelected?._id)[0]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+    setOpen(false);
+  };
+
   return (
-    <div className="hover:border hover:rounded-md p-2">
+    <div
+      className={`${
+        input ? "hover:border hover:rounded-md py-2" : " h-full flex"
+      }`}
+    >
       <button
         popoverTarget="rdp-popover"
-        className=" outline-none  border-none   cursor-default flex items-center justify-center"
+        className={`outline-none border-none w-full cursor-default flex items-center ${
+          date && "pr-2"
+        }`}
+        style={{ anchorName: `${anchor}` } as React.CSSProperties}
         onClick={() => setOpen(true)}
-        style={{ anchorName: "--anchor-1" } as React.CSSProperties}
       >
-        <CalendarDateRangeIcon className="w-5 h-5" />
+        <CalendarDateRangeIcon
+          className={`w-5 h-5 mr-2 ${!input ? "ml-4" : "ml-2"}`}
+        />
         {date && date.toLocaleDateString()}
+        {!input && !date && "Add due date"}
       </button>
       {open && (
         <div
@@ -28,8 +80,10 @@ const DatePicker = ({ date, setDate }: DatePickerProps) => {
           className="dropdown w-fit"
           style={
             {
-              positionAnchor: "--anchor-1",
-              transform: "translateY(-300px) translateX(-200px)",
+              positionAnchor: `${anchor}`,
+              transform: `${
+                input ? "translateY(-300px) translateX(-200px)" : ""
+              }`,
             } as React.CSSProperties
           }
         >
@@ -51,7 +105,13 @@ const DatePicker = ({ date, setDate }: DatePickerProps) => {
                 </button>
                 <button
                   className="btn w-[100px] bg-blue-800 text-white"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    if (!input) {
+                      handleAddDueDate();
+                    } else {
+                      setOpen(false);
+                    }
+                  }}
                 >
                   Save
                 </button>
@@ -64,4 +124,4 @@ const DatePicker = ({ date, setDate }: DatePickerProps) => {
   );
 };
 
-export default DatePicker;
+export { DatePicker };

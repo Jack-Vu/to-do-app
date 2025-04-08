@@ -4,7 +4,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { debounce } from "lodash";
 import axios from "axios";
 import { useShallow } from "zustand/shallow";
-import DatePicker from "./DatePicker";
+import { DatePicker } from "./DatePicker";
 
 const TaskInput = () => {
   const { user, isInputActive, setInputActive, setTasks, updateDisplayTasks } =
@@ -91,7 +91,7 @@ const TaskInput = () => {
               placeholder='Try tying "Pay utilities bill Friday by 6 pm"'
             />
           </div>
-          <DatePicker date={date} setDate={setDate} />
+          <DatePicker date={date} setDate={setDate} anchor="--anchor-1" input />
         </div>
       ) : (
         <div
