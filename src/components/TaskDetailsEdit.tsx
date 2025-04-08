@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useStore } from "../context";
 import {
-  CalendarDateRangeIcon,
   CheckIcon,
   EllipsisVerticalIcon,
   PlusIcon,
@@ -9,10 +8,10 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
-import {MyDay} from "./MyDay";
-import DatePicker from "./DatePicker";
+import { MyDay } from "./MyDay";
 import { ImportantStar } from "./ImportantStar";
 import { DueDate } from "./DueDate";
+import { TaskType } from "../../backend/src/models";
 
 const TaskDetailsEdit = () => {
   const {
@@ -25,11 +24,13 @@ const TaskDetailsEdit = () => {
   } = useStore();
   const [editing, setEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [text, setText] = useState(taskSelected?.task || "");
-  
-  
+  const [text, setText] = useState<string>(taskSelected?.task || "");
+  const [note, setNote] = useState<string>(taskSelected?.note || "");
 
-  
+  useEffect(() => {
+    setText(taskSelected?.task || "");
+    setNote(taskSelected?.note || "");
+  }, [taskSelected, setTaskSelected]);
 
   const createdAt = taskSelected
     ? new Date(taskSelected.createdAt.toString()).toLocaleDateString("en-US", {
@@ -76,14 +77,105 @@ const TaskDetailsEdit = () => {
     }
   }, [text, editing]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
+  };
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNote(e.target.value);
+  };
+  const handleUpdate = async (field: string) => {
+    let input;
+
+    if (field === "note") {
+      if (taskSelected?.note && taskSelected?.note.trim() === note?.trim()) {
+        setNote(note?.trim());
+        return;
+      }
+      input = note?.trim();
+    }
+    if (field === "task") {
+      if (taskSelected?.task.trim() === text?.trim() || text?.trim() === "") {
+        setText(text?.trim());
+        return;
+      }
+      input = text?.trim();
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/editTask`,
+        {
+          taskId: taskSelected?._id,
+          edit:
+            field === "task"
+              ? {
+                  task: input,
+                }
+              : field === "note"
+              ? {
+                  note: input,
+                }
+              : {
+                  complete: !taskSelected?.completed,
+                },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+      setTaskSelected(
+        tasks.filter((task: TaskType) => task._id === taskSelected?._id)[0]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCompleted = async () => {
+    if (taskSelected?.creatorId !== user?._id) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/editTask`,
+        {
+          taskId: taskSelected?._id,
+          edit: {
+            completed: !taskSelected?.completed,
+          },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+      setTaskSelected(
+        tasks.filter((task: TaskType) => task._id === taskSelected?._id)[0]
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const extraSteps = [1, 2, 3];
   return (
-    <div className="w-[20%] h-full rounded-3xl rounded-l-none px-10  border border-l-0 flex flex-col">
-      <div className="flex my-2 mt-6 justify-end">
+    <div className="w-[20%] h-full overflow-auto rounded-3xl rounded-l-none border border-l-0 flex flex-col  scroll-pr-2">
+      <div className="flex my-2 mt-6 justify-end mx-10">
         <XMarkIcon
           className="w-5 h-5 hover:border hover:border-gray-500 hover:rounded"
           onClick={() => {
@@ -93,13 +185,13 @@ const TaskDetailsEdit = () => {
           }}
         />
       </div>
-      <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col">
+      <div className="border p-4 mx-10 mt-2 rounded-sm border-gray-200 flex flex-col">
         <div className="flex">
           <button
             className={`btn btn-circle w-5 h-5 border-black !outline-none mr-2 mt-0.5 flex items-center justify-center cursor-default ${
               taskSelected?.completed ? "border-gray-500 bg-gray-600" : ""
             }`}
-            //   onClick={handleCompleted}
+            onClick={handleCompleted}
           >
             <CheckIcon
               className={`opacity-0 hover:opacity-100 transition-opacity w-full h-full font-extrabold ${
@@ -110,17 +202,17 @@ const TaskDetailsEdit = () => {
           {editing ? (
             <textarea
               ref={textareaRef}
-              onChange={handleChange}
-              autoFocus
+              onChange={handleTextChange}
               className={`w-[85%] h-auto border-none outline-none text-wrap resize-none break-words font-semibold text-xl ${
                 taskSelected?.completed ? "line-through text-gray-500" : ""
               }`}
               value={text}
               maxLength={300}
+              onBlur={() => handleUpdate("task")}
             />
           ) : (
             <div
-              className={`w-[85%] h-fit text-wrap break-words font-semibold text-xl ${
+              className={`w-[80%] h-fit text-wrap break-words font-semibold text-xl ${
                 taskSelected?.completed ? "line-through text-gray-500" : ""
               }`}
               onClick={() => setEditing(true)}
@@ -166,20 +258,31 @@ const TaskDetailsEdit = () => {
           {"Next Step "}
         </div>
       </div>
-      <MyDay taskSelected={taskSelected} />
-      <div className="border mt-2 rounded-sm border-gray-200 flex flex-col">
+      <MyDay />
+      <div className="border mt-2 mx-10 rounded-sm border-gray-200 flex flex-col">
         <div className="pb-4">
-          <DueDate/>
+          <DueDate />
         </div>
         <div className="pb-4 ml-4">Repeat</div>
       </div>
-      <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col">
-        {`${taskSelected?.note ? taskSelected?.note : "notes"}`}
+      <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col mx-10 mb-5">
+        <textarea
+          onChange={handleNotesChange}
+          className={`w-[85%] h-auto border-none outline-none text-wrap resize-none break-words font-semibold text-sm ${
+            taskSelected?.completed ? "line-through text-gray-500" : ""
+          }`}
+          value={note}
+          placeholder="Notes"
+          maxLength={300}
+          onBlur={() => handleUpdate("note")}
+        />
       </div>
 
-      <div className="border-t-1 p-4 mt-auto border-gray-200 flex flex-row justify-between">
-        <div className="border w-full text-center">Created on {createdAt}</div>
-        <TrashIcon className="w-5 h-5" onClick={handleDelete} />
+      <div className="border-t-1 mt-auto border-gray-200 flex flex-row justify-between items-center text-gray-500">
+        <div className="w-full text-center py-4 ">Created on {createdAt}</div>
+        <div className="w-[15%] h-full rounded-br-3xl flex justify-center items-center : hover:bg-gray-200 ">
+          <TrashIcon className="w-5 h-full " onClick={handleDelete} />
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useStore } from "../context";
 import { CalendarDateRangeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { DatePicker } from "./DatePicker";
+import axios from "axios";
+import { TaskType } from "../../backend/src/models";
 
 const DueDate = () => {
-  const { taskSelected } = useStore();
+  const { taskSelected, user, setTasks, updateDisplayTasks, setTaskSelected } =
+    useStore();
   const [datePicked, setDatePicked] = useState<Date | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const dueDate = taskSelected?.dueDate
@@ -34,6 +37,42 @@ const DueDate = () => {
     }
   }
 
+  const handleRemoveDueDate = async () => {
+    console.log("we made it");
+    try {
+      if (taskSelected?.creatorId !== user?._id) {
+        throw new Error("Unauthorized");
+      }
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/editTask`,
+        {
+          taskId: taskSelected?._id,
+          edit: {
+            dueDate: null,
+          },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+      setTaskSelected(
+        tasks.filter((task: TaskType) => task._id === taskSelected?._id)[0]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+    setOpen(false);
+    setDatePicked(undefined)
+  };
+
   return (
     <>
       {dueDate ? (
@@ -52,7 +91,10 @@ const DueDate = () => {
               <>{dueDate}</>
             )}
           </div>
-          <div className=" w-[20%] py-[13px] hover:rounded hover:border text-gray-400 flex justify-center items-center">
+          <div
+            className=" w-[20%] py-[13px] hover:rounded hover:border text-gray-400 flex justify-center items-center"
+            onClick={handleRemoveDueDate}
+          >
             <XMarkIcon className="w-5 h-5" />
           </div>
         </div>

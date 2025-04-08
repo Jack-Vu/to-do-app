@@ -1,15 +1,11 @@
-import React from "react";
 import { LIST_CONSTANT } from "../constant";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { TaskType } from "../../backend/src/models";
 import { useStore } from "../context";
 import axios from "axios";
 
-type MyDayType = {
-  taskSelected: TaskType | null;
-};
-
-const MyDay = ({ taskSelected }: MyDayType) => {
+const MyDay = () => {
+  const { taskSelected } = useStore();
   const { user, setTasks, updateDisplayTasks, setTaskSelected } = useStore();
   const handleMyDay = async () => {
     if (taskSelected?.creatorId !== user?._id) {
@@ -44,18 +40,18 @@ const MyDay = ({ taskSelected }: MyDayType) => {
     }
   };
   return (
-    <>
+    <div className="mx-10">
       {taskSelected?.myDay ? (
         <div className="border  mt-2 rounded-sm border-gray-200 flex text-blue-500 justify-between items-center cursor-default">
-          <div className="flex p-4 gap-2 items-center">
-            <div className="w-5 h-5 ">{LIST_CONSTANT[0].icon}</div>
+          <div className="flex p-4 gap-2 items-center w-[80%] ">
+            <div className="w-5 h-5">{LIST_CONSTANT[0].icon}</div>
             Added to My Day
           </div>
           <div
-            className="hover:border hover:rounded text-gray-400 h-full w-[20%] flex justify-center items-center"
+            className="hover:border hover:rounded text-gray-400 py-[14px] w-[20%] flex justify-center items-center"
             onClick={handleMyDay}
           >
-            <XMarkIcon className="w-5 h-5 " />
+            <XMarkIcon className="w-5 h-5" />
           </div>
         </div>
       ) : (
@@ -67,7 +63,7 @@ const MyDay = ({ taskSelected }: MyDayType) => {
           Add to My Day
         </div>
       )}
-    </>
+    </div>
   );
 };
 

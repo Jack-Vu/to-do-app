@@ -1,45 +1,49 @@
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
+import { useStore } from "../context";
 
 const TaskSearch = () => {
-  const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const { isSearching, setIsSearching, searchInput, setSearchInput } =
+    useStore();
+
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (input) {
-      setIsTyping(true);
+    if (searchInput) {
+      setIsSearching(true);
     } else {
-      setIsTyping(false);
+      setIsSearching(false);
     }
-  }, [input]);
+  }, [searchInput, setIsSearching]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    setSearchInput(e.target.value);
   };
 
   return (
-    <label className="input input-sm w-[90%] !border-gray-300 !outline-none">
+    <div className="input input-sm w-[90%] !border-gray-300 !outline-none">
       <input
         type="text"
-        value={input}
+        value={searchInput}
         onChange={handleChange}
         placeholder="Search"
         className="grow"
         ref={inputRef}
+        onFocus={() => setIsSearching(true)}
       />
-      <div className="flex gap-1">
-        {isTyping ? (
+      <div className="flex gap-1 text-gray-400">
+        {isSearching ? (
           <XMarkIcon
             className="w-5 h-5 cursor-default"
             onClick={() => {
-              setInput("");
+              setSearchInput("");
+              setIsSearching(false);
             }}
           />
         ) : null}
         <MagnifyingGlassIcon className="w-5 h-5 cursor-default scale-x-[-1]" />
       </div>
-    </label>
+    </div>
   );
 };
 

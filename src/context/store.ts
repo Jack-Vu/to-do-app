@@ -17,6 +17,10 @@ type StoreType = {
   setListType: (list: listConstantType) => void;
   isInputActive: boolean;
   setInputActive: (active: boolean) => void;
+  isSearching: boolean;
+  setIsSearching: (search: boolean) => void;
+  searchInput: string;
+  setSearchInput: (input: string) => void;
 };
 
 const useStore = create<StoreType>()((set) => ({
@@ -75,6 +79,10 @@ const useStore = create<StoreType>()((set) => ({
   setTaskSelected: (task) => set({ taskSelected: task }),
   taskDetailsOpen: false,
   setTaskDetailsOpen: (open) => set({ taskDetailsOpen: open }),
+  isSearching: false,
+  setIsSearching: (search) => set({ isSearching: search }),
+  searchInput: "",
+  setSearchInput: (input) => set({ searchInput: input.trim() }),
 }));
 
 export { useStore };

@@ -12,6 +12,7 @@ const TaskMenu = () => {
     updateDisplayTasks,
     setTaskDetailsOpen,
     setTaskSelected,
+    setIsSearching,
   } = useStore(
     useShallow((state) => ({
       listType: state.listType,
@@ -21,6 +22,7 @@ const TaskMenu = () => {
       updateDisplayTasks: state.updateDisplayTasks,
       setTaskDetailsOpen: state.setTaskDetailsOpen,
       setTaskSelected: state.setTaskSelected,
+      setIsSearching: state.setIsSearching,
     }))
   );
 
@@ -58,6 +60,7 @@ const TaskMenu = () => {
                 updateDisplayTasks(tasks);
                 setTaskDetailsOpen(false);
                 setTaskSelected(null);
+                setIsSearching(false);
               }}
               className={`hover:bg-gray-100 flex flex-row gap-2 h-10 items-center ${
                 listType.title === list.title ? "bg-gray-100" : ""
