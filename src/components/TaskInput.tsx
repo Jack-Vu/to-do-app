@@ -4,7 +4,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { debounce } from "lodash";
 import axios from "axios";
 import { useShallow } from "zustand/shallow";
-import { DayPicker } from "react-day-picker";
+import DatePicker from "./DatePicker";
 
 const TaskInput = () => {
   const { user, isInputActive, setInputActive, setTasks, updateDisplayTasks } =
@@ -19,7 +19,6 @@ const TaskInput = () => {
     );
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
-  const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [canSubmit, setCanSubmit] = useState(false);
 
@@ -85,67 +84,14 @@ const TaskInput = () => {
               ref={inputRef}
               autoFocus
               type="text"
+              maxLength={300}
               className="grow"
               onChange={handleChange}
               value={input}
               placeholder='Try tying "Pay utilities bill Friday by 6 pm"'
             />
           </div>
-
-          <div
-            className={`hover:border hover:rounded-md ${
-              date ? "" : "hover:border-r-5"
-            }`}
-          >
-            <button
-              popoverTarget="rdp-popover"
-              className="input !outline-none !border-none  cursor-default flex items-center justify-center"
-              onClick={() => setOpen(true)}
-              style={{ anchorName: "--anchor-1" } as React.CSSProperties}
-            >
-              <CalendarDateRangeIcon className="w-5 h-5 p-0 m-0" />
-              {date && date.toLocaleDateString()}
-            </button>
-            {open && (
-              <div
-                popover="auto"
-                id="rdp-popover"
-                className="dropdown w-fit"
-                style={
-                  {
-                    positionAnchor: "--anchor-1",
-                    transform: "translateY(-300px) translateX(-200px)",
-                  } as React.CSSProperties
-                }
-              >
-                <DayPicker
-                  className="react-day-picker"
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  footer={
-                    <div className="flex justify-evenly">
-                      <button
-                        className="btn w-[100px]"
-                        onClick={() => {
-                          setDate(undefined);
-                          setOpen(false);
-                        }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="btn w-[100px] bg-blue-800 text-white"
-                        onClick={() => setOpen(false)}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  }
-                />
-              </div>
-            )}
-          </div>
+          <DatePicker date={date} setDate={setDate} />
         </div>
       ) : (
         <div

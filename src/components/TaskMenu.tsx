@@ -2,27 +2,30 @@ import { useStore } from "../context";
 import { LIST_CONSTANT } from "../constant";
 import { TaskSearch } from "./TaskSearch";
 import { UserInfoAvatar } from "./UserInfoAvatar";
-import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 
 const TaskMenu = () => {
-  const { listType, setListType, tasks, displayedTasks, updateDisplayTasks } =
-    useStore(
-      useShallow((state) => ({
-        listType: state.listType,
-        tasks: state.tasks,
-        setListType: state.setListType,
-        displayedTasks: state.displayedTasks,
-        updateDisplayTasks: state.updateDisplayTasks,
-      }))
-    );
-
-  useEffect(() => {
-    console.log("Helllo", tasks, displayedTasks);
-  }, [tasks, displayedTasks]);
+  const {
+    listType,
+    setListType,
+    tasks,
+    updateDisplayTasks,
+    setTaskDetailsOpen,
+    setTaskSelected,
+  } = useStore(
+    useShallow((state) => ({
+      listType: state.listType,
+      tasks: state.tasks,
+      setListType: state.setListType,
+      displayedTasks: state.displayedTasks,
+      updateDisplayTasks: state.updateDisplayTasks,
+      setTaskDetailsOpen: state.setTaskDetailsOpen,
+      setTaskSelected: state.setTaskSelected,
+    }))
+  );
 
   return (
-    <div className="flex items-center flex-col w-[25%] h-full gap-1 pl-0 pr-2">
+    <div className="flex items-center flex-col min-w-3xs h-full gap-1 pl-0 pr-2">
       <UserInfoAvatar />
       <TaskSearch />
       <ul className="menu w-full flex gap-2">
@@ -53,6 +56,8 @@ const TaskMenu = () => {
               onClick={() => {
                 setListType(LIST_CONSTANT[index]);
                 updateDisplayTasks(tasks);
+                setTaskDetailsOpen(false);
+                setTaskSelected(null);
               }}
               className={`hover:bg-gray-100 flex flex-row gap-2 h-10 items-center ${
                 listType.title === list.title ? "bg-gray-100" : ""

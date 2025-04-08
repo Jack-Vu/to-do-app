@@ -4,6 +4,7 @@ import { ListItem, TaskMenu } from "../components";
 import { useStore } from "../context";
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
+import TaskDetailsEdit from "../components/TaskDetailsEdit";
 
 type LoaderDataType = {
   userProfile: UserType;
@@ -12,11 +13,12 @@ type LoaderDataType = {
 const Profile = () => {
   const loaderData = useLoaderData() as LoaderDataType;
   const { userProfile, userTasks } = loaderData;
-  const { setUser, setTasks, updateDisplayTasks } = useStore(
+  const { setUser, setTasks, updateDisplayTasks, taskDetailsOpen } = useStore(
     useShallow((state) => ({
       setUser: state.setUser,
       setTasks: state.setTasks,
       updateDisplayTasks: state.updateDisplayTasks,
+      taskDetailsOpen: state.taskDetailsOpen,
     }))
   );
 
@@ -33,9 +35,10 @@ const Profile = () => {
   }, [setTasks, setUser, updateDisplayTasks, userProfile, userTasks]);
 
   return (
-    <div className="flex h-full w-full justify-center items-center p-8 overflow-x-hidden">
+    <div className="flex h-full w-full items-center p-8 overflow-x-hidden">
       <TaskMenu />
       <ListItem />
+      {taskDetailsOpen && <TaskDetailsEdit />}
     </div>
   );
 };

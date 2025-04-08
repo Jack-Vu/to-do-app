@@ -6,13 +6,15 @@ import { useShallow } from "zustand/shallow";
 import { TaskType } from "../../backend/src/models";
 
 const ListItem = () => {
-  const { setInputActive, listType, displayedTasks } = useStore(
-    useShallow((state) => ({
-      setInputActive: state.setInputActive,
-      listType: state.listType,
-      displayedTasks: state.displayedTasks,
-    }))
-  );
+  const { setInputActive, listType, displayedTasks, taskDetailsOpen } =
+    useStore(
+      useShallow((state) => ({
+        setInputActive: state.setInputActive,
+        listType: state.listType,
+        displayedTasks: state.displayedTasks,
+        taskDetailsOpen: state.taskDetailsOpen,
+      }))
+    );
 
   const plannedArray: TaskType[][] = [[], [], [], []];
   if (listType.title === "Planned") {
@@ -74,7 +76,9 @@ const ListItem = () => {
 
   return (
     <div
-      className={`w-full h-full border rounded-3xl p-10 flex flex-col justify-between bg-cover bg-center ${listType.url}`}
+      className={`h-full border rounded-3xl p-10 flex flex-col justify-between bg-cover bg-center ${
+        taskDetailsOpen ? "rounded-r-none w-[60%]" : "w-[80%]"
+      } ${listType.url}`}
     >
       <div
         className={`${

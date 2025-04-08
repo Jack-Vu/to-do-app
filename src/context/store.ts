@@ -9,12 +9,14 @@ type StoreType = {
   setTasks: (task: TaskType[]) => void;
   displayedTasks: TaskType[][];
   updateDisplayTasks: (tasks: TaskType[]) => void;
+  taskSelected: TaskType | null;
+  setTaskSelected: (task: TaskType | null) => void;
+  taskDetailsOpen: boolean;
+  setTaskDetailsOpen: (open: boolean) => void;
   listType: listConstantType;
   setListType: (list: listConstantType) => void;
   isInputActive: boolean;
   setInputActive: (active: boolean) => void;
-  dateOpen: boolean;
-  setDateOpen: (open: boolean) => void;
 };
 
 const useStore = create<StoreType>()((set) => ({
@@ -69,8 +71,10 @@ const useStore = create<StoreType>()((set) => ({
   setListType: (list) => set({ listType: list }),
   isInputActive: false,
   setInputActive: (active) => set({ isInputActive: active }),
-  dateOpen: false,
-  setDateOpen: (open) => set({ dateOpen: open }),
+  taskSelected: null,
+  setTaskSelected: (task) => set({ taskSelected: task }),
+  taskDetailsOpen: false,
+  setTaskDetailsOpen: (open) => set({ taskDetailsOpen: open }),
 }));
 
 export { useStore };

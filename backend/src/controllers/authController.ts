@@ -12,7 +12,7 @@ const profile = async (req: Request, res: Response) => {
         throw new Error("Unauthorized");
       }
       const userTasks = await Task.find({ creatorId: loggedInUser }).sort({
-        createdAt: 1,
+        createdAt: -1,
       });
       res.status(200).send({
         userProfile,
@@ -30,17 +30,25 @@ const profile = async (req: Request, res: Response) => {
 
 const createTask = async (req: Request, res: Response) => {
   try {
+    const userExist = await User.findOne({ _id: req.body.decoded._id });
+    if (!userExist) {
+      throw new Error("Unauthorized");
+    }
     const task = new Task(req.body);
     await task.save();
     const usersTasks = await Task.find({
       creatorId: req.body.decoded._id,
     }).sort({
-      createdAt: 1,
+      createdAt: -1,
     });
     console.log(usersTasks);
     res.status(201).send(usersTasks);
   } catch (error) {
     console.error(error);
+    const errorMessage = (error as Error).message;
+    if (errorMessage === "Unauthorized") {
+      res.status(404).send({ message: errorMessage });
+    }
     res.status(500).send("Server Error");
   }
 };
@@ -58,7 +66,7 @@ const editTask = async (req: Request, res: Response) => {
       const userTasks = await Task.find({
         creatorId: req.body.decoded._id,
       }).sort({
-        createdAt: 1,
+        createdAt: -1,
       });
       res.status(200).send({ userTasks });
     }
@@ -67,4 +75,26 @@ const editTask = async (req: Request, res: Response) => {
   }
 };
 
-export { profile, createTask, editTask };
+const deleteTask = async (req: Request, res: Response) => {
+  console.log("we here");
+
+  try {
+    const taskToDelete = await Task.findById({ _id: req.body.taskId });
+    if (taskToDelete) {
+      if (taskToDelete?.creatorId.toString() !== req.body.decoded._id) {
+        throw new Error("Unauthorized");
+      }
+      await Task.findByIdAndDelete({ _id: req.body.taskId });
+      const userTasks = await Task.find({
+        creatorId: req.body.decoded._id,
+      }).sort({
+        createdAt: -1,
+      });
+      res.status(200).send({ userTasks });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { profile, createTask, editTask, deleteTask };

@@ -10,12 +10,24 @@ type TaskProps = {
   task: TaskType;
 };
 const Task = ({ task }: TaskProps) => {
-  const { setTasks, user, updateDisplayTasks } = useStore(
+  const {
+    setTasks,
+    user,
+    updateDisplayTasks,
+    setTaskDetailsOpen,
+    setTaskSelected,
+    taskSelected,
+    listType,
+  } = useStore(
     useShallow((state) => ({
       setTasks: state.setTasks,
       tasks: state.tasks,
       user: state.user,
       updateDisplayTasks: state.updateDisplayTasks,
+      setTaskDetailsOpen: state.setTaskDetailsOpen,
+      setTaskSelected: state.setTaskSelected,
+      taskSelected: state.taskSelected,
+      listType: state.listType,
     }))
   );
 
@@ -50,10 +62,10 @@ const Task = ({ task }: TaskProps) => {
   };
 
   const handleImportant = async () => {
-    if (task.creatorId !== user?._id) {
-      throw new Error("Unauthorized");
-    }
     try {
+      if (task.creatorId !== user?._id) {
+        throw new Error("Unauthorized");
+      }
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `http://localhost:4000/auth/editTask`,
@@ -79,23 +91,34 @@ const Task = ({ task }: TaskProps) => {
     }
   };
   return (
-    <div className="flex flex-col p-2 gap-1 input w-full h-full bg-white items-start  !outline-none shadow-md cursor-default">
+    <div
+      className="flex flex-col p-2 gap-1 input w-full h-full bg-white items-start  !outline-none shadow-md cursor-default"
+      onClick={() => {
+        if (task._id === taskSelected?._id) {
+          setTaskDetailsOpen(false);
+          setTaskSelected(null);
+        } else {
+          setTaskDetailsOpen(true);
+          setTaskSelected(task);
+        }
+      }}
+    >
       <div className="flex flex-row items-start w-full">
         <button
-          className={`btn btn-circle w-4 h-4 bg-inherit border-black !outline-none mr-2 mt-0.5 flex items-center justify-center cursor-default ${
-            task.completed ? "border-gray-500" : ""
+          className={`btn btn-circle w-4 h-4 border-black !outline-none mr-2 mt-0.5 flex items-center justify-center cursor-default ${
+            task.completed ? "border-gray-500 bg-gray-600" : ""
           }`}
           onClick={handleCompleted}
         >
           <CheckIcon
-            className={`opacity-0 hover:opacity-100 transition-opacity w-2 h-2 font-extrabold ${
-              task.completed ? "opacity-100 text-gray-500" : ""
+            className={`opacity-0 hover:opacity-100 transition-opacity w-full h-full font-extrabold ${
+              task.completed ? "opacity-100 text-white" : ""
             }`}
           />
         </button>
-        <div className="w-full flex flex-col gap-1 mr-1">
+        <div className="w-[95%] flex flex-col gap-1 mr-1">
           <div
-            className={`flex w-full h-fit text-wrap textarea-sm ${
+            className={`w-full h-fit text-wrap break-words textarea-sm ${
               task.completed ? "line-through text-gray-500" : ""
             }`}
           >
@@ -104,8 +127,12 @@ const Task = ({ task }: TaskProps) => {
           <Details task={task} />
         </div>
         <StarIcon
-          className={`w-4 h-4 text-gray-400 hover:text-blue-500 ${
-            task.important ? "fill-blue-500" : ""
+          className={`w-4 h-4 text-gray-400 hover:text-blue-500 ml-auto ${
+            task.important
+              ? listType.title === "Important"
+                ? "fill-pink-800"
+                : "fill-blue-500"
+              : "fill-blue-500"
           }`}
           onClick={handleImportant}
         />
