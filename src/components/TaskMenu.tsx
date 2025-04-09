@@ -32,7 +32,7 @@ const TaskMenu = () => {
       <TaskSearch />
       <ul className="menu w-full flex gap-2">
         {LIST_CONSTANT.map((list, index) => {
-          let taskNumber;
+          let taskNumber = 0;
           switch (list.title) {
             case "My Day":
               taskNumber = tasks.filter((task) => !!task.myDay).length;
@@ -80,9 +80,11 @@ const TaskMenu = () => {
                     </div>
                     <p>{list.title}</p>
                   </div>
-                  <div className="w-4 h-4 contain-content flex text-[8px] mr-2 bg-gray-300 rounded-full items-center justify-center p-2">
-                    {taskNumber}
-                  </div>
+                  {taskNumber > 0 ? (
+                    <div className="w-4 h-4 contain-content flex text-[8px] mr-2 bg-gray-300 rounded-full items-center justify-center p-2">
+                      {taskNumber}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>

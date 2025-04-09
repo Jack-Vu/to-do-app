@@ -12,6 +12,7 @@ import { ImportantStar } from "./ImportantStar";
 import { DueDate } from "./DueDate";
 import { TaskType } from "../../backend/src/models";
 import { Step } from "./Step";
+import { Modal } from "./Modal";
 
 const TaskDetailsEdit = () => {
   const {
@@ -346,13 +347,32 @@ const TaskDetailsEdit = () => {
           onBlur={() => handleUpdate("note")}
         />
       </div>
-
       <div className="border-t-1 mt-auto border-gray-200 flex flex-row justify-between items-center text-gray-500">
         <div className="w-full text-center py-4 ">Created on {createdAt}</div>
         <div className="w-[15%] h-full rounded-br-3xl flex justify-center items-center : hover:bg-gray-200 ">
-          <TrashIcon className="w-5 h-full " onClick={handleDelete} />
+          <TrashIcon
+            className="w-5 h-full "
+            onClick={() => {
+              if (document) {
+                const dialog = document.getElementById(
+                  "my_modal_2"
+                ) as HTMLDialogElement;
+                dialog.showModal();
+              } else {
+                return;
+              }
+            }}
+          />
         </div>
       </div>
+      <Modal
+        title="task"
+        description={taskSelected?.task}
+        handleDelete={() => {
+          console.log("clicked");
+          handleDelete();
+        }}
+      />
     </div>
   );
 };

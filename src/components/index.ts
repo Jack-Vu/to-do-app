@@ -10,3 +10,4 @@ export * from "./DueDate";
 export * from "./DatePicker";
 export * from "./ImportantStar";
 export * from "./Step";
+export * from "./Modal";

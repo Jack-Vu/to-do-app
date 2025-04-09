@@ -10,6 +10,7 @@ import { useStore } from "../context";
 import axios from "axios";
 import { TaskType } from "../../backend/src/models";
 import { useShallow } from "zustand/shallow";
+import { Modal } from "./Modal";
 
 type StepCompType = {
   step: StepType;
@@ -220,11 +221,22 @@ const Step = ({ step }: StepCompType) => {
             <button
               className="w-[200px] border-t-1 border-gray-300 hover:bg-gray-100 h-[50px] flex items-center"
               onClick={() => {
-                handleDelete();
                 setOpen(false);
               }}
             >
-              <div className="flex text-red-500">
+              <div
+                className="flex text-red-500"
+                onClick={() => {
+                  if (document) {
+                    const dialog = document.getElementById(
+                      "my_modal_2"
+                    ) as HTMLDialogElement;
+                    dialog.showModal();
+                  } else {
+                    return;
+                  }
+                }}
+              >
                 <TrashIcon className="w-5 h-5 mx-2" />
                 Delete
               </div>
@@ -232,6 +244,7 @@ const Step = ({ step }: StepCompType) => {
           </div>
         )}
       </div>
+      <Modal title="step" description={stepText} handleDelete={handleDelete} />
     </div>
   );
 };
