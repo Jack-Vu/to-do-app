@@ -42,7 +42,7 @@ const Login = () => {
       />
       <div className="flex gap-2 border items-center p-1 rounded-md">
         <input
-        className="outline-none"
+          className="outline-none"
           type={show ? "text" : "password"}
           name="password"
           onChange={handleFormDataChange}
@@ -54,6 +54,9 @@ const Login = () => {
       </div>
       <button className="btn" onClick={handleSubmit}>
         Login
+      </button>
+      <button className="btn" onClick={() => navigate("/signup")}>
+        Sign Up
       </button>
     </div>
   );

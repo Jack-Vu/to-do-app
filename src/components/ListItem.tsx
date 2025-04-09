@@ -93,7 +93,7 @@ const ListItem = () => {
         displayedTasks[0].length === 0 && displayedTasks[1].length == 0
           ? listType.url
           : listType.secondaryUrl
-      } ${isSearching && LIST_CONSTANT[4].secondaryUrl}`}
+      } ${isSearching && LIST_CONSTANT[3].secondaryUrl}`}
     >
       {!isSearching && (
         <div

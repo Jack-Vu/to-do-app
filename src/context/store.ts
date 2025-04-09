@@ -58,12 +58,6 @@ const useStore = create<StoreType>()((set) => ({
           break;
         case LIST_CONSTANT[3]:
           filteredTasks = [
-            tasks.filter((task) => task.dueDate && !task.completed),
-            tasks.filter((task) => task.dueDate && task.completed),
-          ];
-          break;
-        case LIST_CONSTANT[4]:
-          filteredTasks = [
             tasks.filter((task) => !task.completed),
             tasks.filter((task) => task.completed),
           ];

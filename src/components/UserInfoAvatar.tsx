@@ -19,7 +19,7 @@ const UserInfoAvatar = () => {
     <div className="flex w-full gap-2 items-center p-2 pl-4">
       <div className="avatar avatar-placeholder">
         <div className="bg-blue-400 text-neutral-content w-12 rounded-full">
-          <span className=" text-white">{`${user?.firstName[0]}${user?.lastName[0]}`}</span>
+          <span className=" text-white">{`${user?.firstName[0].toUpperCase()} ${user?.lastName[0].toUpperCase()}`}</span>
         </div>
       </div>
       <div className="w-full">

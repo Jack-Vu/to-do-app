@@ -17,14 +17,12 @@ const userSchema = new Schema<UserType>(
     firstName: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       set: (value: string) => sanitizeHtml(value.trim()),
     },
     lastName: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       set: (value: string) => sanitizeHtml(value.trim()),
     },

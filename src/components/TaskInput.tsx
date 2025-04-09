@@ -7,16 +7,23 @@ import { useShallow } from "zustand/shallow";
 import { DatePicker } from "./DatePicker";
 
 const TaskInput = () => {
-  const { user, isInputActive, setInputActive, setTasks, updateDisplayTasks } =
-    useStore(
-      useShallow((state) => ({
-        user: state.user,
-        isInputActive: state.isInputActive,
-        setInputActive: state.setInputActive,
-        setTasks: state.setTasks,
-        updateDisplayTasks: state.updateDisplayTasks,
-      }))
-    );
+  const {
+    user,
+    isInputActive,
+    listType,
+    setInputActive,
+    setTasks,
+    updateDisplayTasks,
+  } = useStore(
+    useShallow((state) => ({
+      user: state.user,
+      listType: state.listType,
+      isInputActive: state.isInputActive,
+      setInputActive: state.setInputActive,
+      setTasks: state.setTasks,
+      updateDisplayTasks: state.updateDisplayTasks,
+    }))
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -26,7 +33,7 @@ const TaskInput = () => {
     if (value.trim() !== "") {
       setCanSubmit(true);
     }
-  }, 1500);
+  }, 1000);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -45,6 +52,8 @@ const TaskInput = () => {
         `http://localhost:4000/auth/createTask`,
         {
           task: input,
+          myDay: listType.title === "My Day" ? true : false,
+          important: listType.title === "Important" ? true : false,
           dueDate: date ? date : undefined,
           creatorId: user?._id,
         },

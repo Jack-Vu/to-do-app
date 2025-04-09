@@ -38,28 +38,28 @@ const SignUp = () => {
         type="text"
         name="firstName"
         onChange={handleFormDataChange}
-        placeholder="firstName"
+        placeholder="First Name"
       />
       <input
         className="border p-1 outline-none"
         type="text"
         name="lastName"
         onChange={handleFormDataChange}
-        placeholder="lastName"
+        placeholder="Last Name"
       />
       <input
         className="border p-1 outline-none"
         type="text"
         name="username"
         onChange={handleFormDataChange}
-        placeholder="username"
+        placeholder="Username"
       />
       <input
         className="border p-1 outline-none"
         type="email"
         name="email"
         onChange={handleFormDataChange}
-        placeholder="email"
+        placeholder="Email"
       />
       <div className="flex gap-2 border items-center p-1">
         <input
@@ -67,7 +67,7 @@ const SignUp = () => {
           type={show ? "text" : "password"}
           name="password"
           onChange={handleFormDataChange}
-          placeholder="password"
+          placeholder="Password"
         />
         <button className="btn btn-xs " onClick={showHidePassword}>
           Show Password

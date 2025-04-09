@@ -46,6 +46,12 @@ const Details = ({ task }: DetailsProps) => {
           </div>
         ),
         listType.title !== "Tasks" && <div>{"Tasks"}</div>,
+        task.steps.length > 0 && (
+          <div>
+            {task.steps.filter((step) => step.completed).length} /{" "}
+            {task.steps.length}{" "}
+          </div>
+        ),
         task.dueDate && (
           <div className={`${late ? "text-red-600" : ""}`}>{`${dateDue}`}</div>
         ),

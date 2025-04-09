@@ -3,7 +3,7 @@ import {
   HomeIcon,
   StarIcon,
   SunIcon,
-  UserIcon,
+  // UserIcon,
 } from "@heroicons/react/24/outline";
 import { JSX } from "react";
 
@@ -37,13 +37,13 @@ const LIST_CONSTANT = [
     icon: <BookOpenIcon className="w-full h-full text-inherit" />,
     textColor: "text-green-800",
   },
-  {
-    title: "Assigned to me",
-    url: "bg-[url('/images/Assigned.png')]",
-    secondaryUrl: "bg-[url('/images/AssignedSecondary.png')]",
-    icon: <UserIcon className="w-full h-full text-inherit" />,
-    textColor: "text-green-700",
-  },
+  // {
+  //   title: "Assigned to me",
+  //   url: "bg-[url('/images/Assigned.png')]",
+  //   secondaryUrl: "bg-[url('/images/AssignedSecondary.png')]",
+  //   icon: <UserIcon className="w-full h-full text-inherit" />,
+  //   textColor: "text-green-700",
+  // },
   {
     title: "Tasks",
     url: "bg-[url('/images/Tasks.png')]",

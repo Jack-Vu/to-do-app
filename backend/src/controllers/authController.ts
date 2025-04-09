@@ -41,7 +41,6 @@ const createTask = async (req: Request, res: Response) => {
     }).sort({
       createdAt: -1,
     });
-    console.log(usersTasks);
     res.status(201).send(usersTasks);
   } catch (error) {
     console.error(error);
@@ -61,7 +60,6 @@ const editTask = async (req: Request, res: Response) => {
         throw new Error("Unauthorized");
       }
       const updatedTask = taskToEdit.set(req.body.edit);
-      console.log(updatedTask);
       await updatedTask.save();
       const userTasks = await Task.find({
         creatorId: req.body.decoded._id,
@@ -76,8 +74,6 @@ const editTask = async (req: Request, res: Response) => {
 };
 
 const deleteTask = async (req: Request, res: Response) => {
-  console.log("we here");
-
   try {
     const taskToDelete = await Task.findById({ _id: req.body.taskId });
     if (taskToDelete) {
@@ -105,8 +101,6 @@ const addStep = async (req: Request, res: Response) => {
         throw new Error("Unauthorized");
       }
       taskToEdit.steps.push(req.body.newStep);
-      console.log("Yo we lit", taskToEdit);
-
       await taskToEdit.save();
       const userTasks = await Task.find({
         creatorId: req.body.decoded._id,
@@ -121,7 +115,6 @@ const addStep = async (req: Request, res: Response) => {
 };
 
 const editStep = async (req: Request, res: Response) => {
-  console.log("editing steps");
   try {
     const taskToEdit = await Task.findById({ _id: req.body.taskId });
     if (taskToEdit) {
@@ -131,8 +124,6 @@ const editStep = async (req: Request, res: Response) => {
       const setIndex = taskToEdit.steps.findIndex(
         (step) => step._id.toString() === req.body.stepId
       );
-      console.log(setIndex);
-      console.log(taskToEdit.steps[setIndex]);
 
       if (req.body.editType === "completed") {
         taskToEdit.steps[setIndex].completed =
@@ -141,8 +132,6 @@ const editStep = async (req: Request, res: Response) => {
       if (req.body.editType === "description") {
         taskToEdit.steps[setIndex].description = req.body.description;
       }
-      console.log("Yo we lit", taskToEdit.steps[0]);
-      console.log("Edit", req.body.description);
 
       await taskToEdit.save();
       const userTasks = await Task.find({
@@ -156,5 +145,51 @@ const editStep = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+const promoteStep = async (req: Request, res: Response) => {
+  try {
+    await Task.findByIdAndUpdate(req.body.taskId, {
+      $pull: { steps: { _id: req.body.stepId } },
+    });
 
-export { profile, createTask, editTask, deleteTask, addStep, editStep };
+    const task = new Task({
+      creatorId: req.body.decoded._id,
+      task: req.body.description,
+    });
+    await task.save();
+    const userTasks = await Task.find({
+      creatorId: req.body.decoded._id,
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(200).send({ userTasks });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const deleteStep = async (req: Request, res: Response) => {
+  try {
+    await Task.findByIdAndUpdate(req.body.taskId, {
+      $pull: { steps: { _id: req.body.stepId } },
+    });
+    const userTasks = await Task.find({
+      creatorId: req.body.decoded._id,
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(200).send({ userTasks });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export {
+  profile,
+  createTask,
+  editTask,
+  deleteTask,
+  addStep,
+  editStep,
+  promoteStep,
+  deleteStep,
+};
