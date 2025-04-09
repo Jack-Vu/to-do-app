@@ -1,6 +1,7 @@
 import { Date, model, Schema, Types } from "mongoose";
 import { User } from "./User";
 import sanitizeHtml from "sanitize-html";
+import { StepSchema, StepType } from "./Step";
 
 type TaskType = {
   _id: Types.ObjectId;
@@ -13,6 +14,7 @@ type TaskType = {
   repeatInterval: "Daily" | "Weekdays" | "Weekly" | "Monthly" | "Yearly";
   note: string;
   createdAt: Date;
+  steps: [StepType];
 };
 
 const taskSchema = new Schema<TaskType>(
@@ -36,6 +38,7 @@ const taskSchema = new Schema<TaskType>(
       set: (value: string) => sanitizeHtml(value),
     },
     createdAt: { type: Schema.Types.Date, default: Date.now },
+    steps: [StepSchema],
   },
   { collection: "Tasks" }
 );

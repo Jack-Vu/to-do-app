@@ -97,4 +97,64 @@ const deleteTask = async (req: Request, res: Response) => {
   }
 };
 
-export { profile, createTask, editTask, deleteTask };
+const addStep = async (req: Request, res: Response) => {
+  try {
+    const taskToEdit = await Task.findById({ _id: req.body.taskId });
+    if (taskToEdit) {
+      if (taskToEdit?.creatorId.toString() !== req.body.decoded._id) {
+        throw new Error("Unauthorized");
+      }
+      taskToEdit.steps.push(req.body.newStep);
+      console.log("Yo we lit", taskToEdit);
+
+      await taskToEdit.save();
+      const userTasks = await Task.find({
+        creatorId: req.body.decoded._id,
+      }).sort({
+        createdAt: -1,
+      });
+      res.status(200).send({ userTasks });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const editStep = async (req: Request, res: Response) => {
+  console.log("editing steps");
+  try {
+    const taskToEdit = await Task.findById({ _id: req.body.taskId });
+    if (taskToEdit) {
+      if (taskToEdit?.creatorId.toString() !== req.body.decoded._id) {
+        throw new Error("Unauthorized");
+      }
+      const setIndex = taskToEdit.steps.findIndex(
+        (step) => step._id.toString() === req.body.stepId
+      );
+      console.log(setIndex);
+      console.log(taskToEdit.steps[setIndex]);
+
+      if (req.body.editType === "completed") {
+        taskToEdit.steps[setIndex].completed =
+          !taskToEdit.steps[setIndex].completed;
+      }
+      if (req.body.editType === "description") {
+        taskToEdit.steps[setIndex].description = req.body.description;
+      }
+      console.log("Yo we lit", taskToEdit.steps[0]);
+      console.log("Edit", req.body.description);
+
+      await taskToEdit.save();
+      const userTasks = await Task.find({
+        creatorId: req.body.decoded._id,
+      }).sort({
+        createdAt: -1,
+      });
+      res.status(200).send({ userTasks });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { profile, createTask, editTask, deleteTask, addStep, editStep };

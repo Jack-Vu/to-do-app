@@ -17,6 +17,8 @@ type StoreType = {
   setListType: (list: listConstantType) => void;
   isInputActive: boolean;
   setInputActive: (active: boolean) => void;
+  stepInputActive: boolean;
+  setStepInputActive: (active: boolean) => void;
   isSearching: boolean;
   setIsSearching: (search: boolean) => void;
   searchInput: string;
@@ -75,6 +77,8 @@ const useStore = create<StoreType>()((set) => ({
   setListType: (list) => set({ listType: list }),
   isInputActive: false,
   setInputActive: (active) => set({ isInputActive: active }),
+  stepInputActive: false,
+  setStepInputActive: (active) => set({ stepInputActive: active }),
   taskSelected: null,
   setTaskSelected: (task) => set({ taskSelected: task }),
   taskDetailsOpen: false,

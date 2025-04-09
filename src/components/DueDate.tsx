@@ -38,7 +38,6 @@ const DueDate = () => {
   }
 
   const handleRemoveDueDate = async () => {
-    console.log("we made it");
     try {
       if (taskSelected?.creatorId !== user?._id) {
         throw new Error("Unauthorized");
@@ -70,7 +69,7 @@ const DueDate = () => {
       console.error(error);
     }
     setOpen(false);
-    setDatePicked(undefined)
+    setDatePicked(undefined);
   };
 
   return (
@@ -81,7 +80,7 @@ const DueDate = () => {
             dueDateComparedToToday === "Today" && "text-blue-500"
           } ${
             dueDateComparedToToday === "Future" && "text-blue-500"
-          } border-b-1  border-gray-200 flex items-center `}
+          } border-gray-200 flex items-center `}
         >
           <div className="hover:bg-gray-100 py-3 flex grow rounded">
             <CalendarDateRangeIcon className="w-5 h-5 ml-4 mr-2" />

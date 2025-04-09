@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "../context";
 import {
   CheckIcon,
-  EllipsisVerticalIcon,
   PlusIcon,
   TrashIcon,
   XMarkIcon,
@@ -12,6 +11,7 @@ import { MyDay } from "./MyDay";
 import { ImportantStar } from "./ImportantStar";
 import { DueDate } from "./DueDate";
 import { TaskType } from "../../backend/src/models";
+import { Step } from "./Step";
 
 const TaskDetailsEdit = () => {
   const {
@@ -21,15 +21,21 @@ const TaskDetailsEdit = () => {
     setTasks,
     user,
     updateDisplayTasks,
+    stepInputActive,
+    setStepInputActive,
   } = useStore();
   const [editing, setEditing] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [text, setText] = useState<string>(taskSelected?.task || "");
+  const [stepInput, setStepInput] = useState("");
+
   const [note, setNote] = useState<string>(taskSelected?.note || "");
 
   useEffect(() => {
     setText(taskSelected?.task || "");
     setNote(taskSelected?.note || "");
+    setStepInput("");
   }, [taskSelected, setTaskSelected]);
 
   const createdAt = taskSelected
@@ -77,11 +83,34 @@ const TaskDetailsEdit = () => {
     }
   }, [text, editing]);
 
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setStepInputActive(false);
+      }
+    },
+
+    [setStepInputActive]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [handleClickOutside]);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNote(e.target.value);
+  };
+  const handleStepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStepInput(e.target.value);
   };
   const handleUpdate = async (field: string) => {
     let input;
@@ -112,12 +141,8 @@ const TaskDetailsEdit = () => {
               ? {
                   task: input,
                 }
-              : field === "note"
-              ? {
-                  note: input,
-                }
               : {
-                  complete: !taskSelected?.completed,
+                  note: input,
                 },
         },
         {
@@ -172,7 +197,44 @@ const TaskDetailsEdit = () => {
     }
   };
 
-  const extraSteps = [1, 2, 3];
+  const handleAddStep = async () => {
+    console.log("why");
+
+    if (stepInput.trim() === "") {
+      return;
+    }
+    if (taskSelected?.creatorId !== user?._id) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:4000/auth/addStep`,
+        {
+          taskId: taskSelected?._id,
+          newStep: {
+            description: stepInput.trim(),
+          },
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const tasks = await response.data.userTasks;
+      setTasks(tasks);
+      updateDisplayTasks(tasks);
+      setTaskSelected(
+        tasks.filter((task: TaskType) => task._id === taskSelected?._id)[0]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="w-[20%] h-full overflow-auto rounded-3xl rounded-l-none border border-l-0 flex flex-col  scroll-pr-2">
       <div className="flex my-2 mt-6 justify-end mx-10">
@@ -224,46 +286,53 @@ const TaskDetailsEdit = () => {
           <ImportantStar task={taskSelected} dimensions="w-5 h-5" />
         </div>
 
-        {extraSteps.map(() => {
-          return (
-            <div className="flex flex-col justify-center">
-              <div className="border-b-1 p-2 border-gray-200 flex items-center">
-                <button
-                  className={`btn btn-circle w-4 h-4 border-black !outline-none mr-2 mt-0.5 flex items-center justify-center cursor-default ${
-                    taskSelected?.completed ? "border-gray-500 bg-gray-600" : ""
+        {taskSelected?.steps?.map((step) => {
+          console.log(taskSelected.steps);
+          return <Step step={step} />;
+        })}
+        <div ref={containerRef}>
+          {stepInputActive ? (
+            <div className="flex items-center p-1 border-none outline-none">
+              <button
+                className={`btn btn-circle w-4 h-4 border-black !outline-none mr-2 mt-0.5 flex items-center justify-center cursor-default ${
+                  taskSelected?.completed ? "border-gray-500 bg-gray-600" : ""
+                }`}
+                onClick={handleAddStep}
+              >
+                <CheckIcon
+                  className={`opacity-0 hover:opacity-100 transition-opacity w-full h-full font-extrabold ${
+                    taskSelected?.completed ? "opacity-100 text-white" : ""
                   }`}
-                  //   onClick={handleCompleted}
-                >
-                  <CheckIcon
-                    className={`opacity-0 hover:opacity-100 transition-opacity w-full h-full font-extrabold ${
-                      taskSelected?.completed ? "opacity-100 text-white" : ""
-                    }`}
-                  />
-                </button>
-                <input
-                  className={`w-[85%] h-fit text-wrap break-words outline-none ${
-                    taskSelected?.completed ? "line-through text-gray-500" : ""
-                  }`}
-                  onClick={() => setEditing(true)}
-                  value={taskSelected?.task}
                 />
-
-                <EllipsisVerticalIcon className="w-5 h-5" />
+              </button>
+              <input
+                autoFocus
+                className="flex grow border-none outline-none"
+                value={stepInput}
+                onChange={handleStepChange}
+              />
+            </div>
+          ) : (
+            <div
+              className="flex grow input border-none hover:bg-gray-200"
+              onClick={() => {
+                setStepInputActive(true);
+              }}
+            >
+              <PlusIcon className="w-5 h-5 text-blue-500" cursor="default" />
+              <div className={`${stepInput ? "text-black" : "text-blue-500 "}`}>
+                {stepInput || "Next Step"}
               </div>
             </div>
-          );
-        })}
-        <div className="flex grow input mt-2">
-          <PlusIcon className="w-5 h-5 mr-2" cursor="default" />
-          {"Next Step "}
+          )}
         </div>
       </div>
       <MyDay />
       <div className="border mt-2 mx-10 rounded-sm border-gray-200 flex flex-col">
-        <div className="pb-4">
+        <div className="">
           <DueDate />
         </div>
-        <div className="pb-4 ml-4">Repeat</div>
+        {/* <div className="pb-4 ml-4">Repeat</div> */}
       </div>
       <div className="border p-4 mt-2 rounded-sm border-gray-200 flex flex-col mx-10 mb-5">
         <textarea
@@ -288,4 +357,4 @@ const TaskDetailsEdit = () => {
   );
 };
 
-export default TaskDetailsEdit;
+export { TaskDetailsEdit };

@@ -4,7 +4,7 @@ import { ListItem, TaskMenu } from "../components";
 import { useStore } from "../context";
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
-import TaskDetailsEdit from "../components/TaskDetailsEdit";
+import { TaskDetailsEdit } from "../components/TaskDetailsEdit";
 
 type LoaderDataType = {
   userProfile: UserType;

@@ -19,7 +19,6 @@ const DatePicker = ({ date, setDate, anchor, input }: DatePickerProps) => {
   const [open, setOpen] = useState(false);
 
   const handleAddDueDate = async () => {
-    console.log("we made it");
     try {
       if (taskSelected?.creatorId !== user?._id) {
         throw new Error("Unauthorized");
